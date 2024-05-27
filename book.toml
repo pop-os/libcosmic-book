@@ -1,0 +1,9 @@
+[book]
+authors = ["Michael Aaron Murphy"]
+language = "en"
+multilingual = true
+src = "src"
+title = "COSMIC Toolkit"
+
+[build]
+build-dir = "public"
