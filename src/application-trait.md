@@ -140,7 +140,7 @@ fn main() -> cosmic::iced::Result {
 [app-core]: https://pop-os.github.io/libcosmic/cosmic/app/struct.Core.html
 [app-trait]: https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html
 [builder-pattern]: https://rust-unofficial.github.io/patterns/patterns/creational/builder.html
-[cosmic-app-template]: https://github.com/edfloreshz/cosmic-app-template
+[cosmic-app-template]: https://github.com/pop-os/cosmic-app-template
 [cosmic-widget]: https://pop-os.github.io/libcosmic/cosmic/widget/index.html
 [update-method]: https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#method.update
 [view-method]: https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#tymethod.view
