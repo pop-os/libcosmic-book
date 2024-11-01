@@ -2,7 +2,7 @@
 
 The [Iced][iced] runtime is an implementation of the MVU (Model-View-Update) design pattern—also known as [TEA (The Elm Architecture)][tea]. The MVU design pattern is a functional approach to GUI design that consists of an event loop with ownership of the application's struct—aka the Model, a view function for generating a View from that model, and an update function for updating the Model.
 
-Similar to how Elm was created, this architecture also emerged naturally in the Rust ecosystem as everyone searched for ways to model applications and services which adhere to Rust's [aliasing XOR mutability rule][aliasing-xor-mutability]. This can be seen with the rise of similar frameworks, such as [Sauron][sauron], [Relm4][relm4], and [tui-realm][tuirealm]. At any given point, the application's model is either being immutably borrowed by its view, or is being mutatbly borrowed by its update method. Thus it eliminates the need for shared references, interior mutability, and runtime borrow checking.
+Similar to how Elm was created, this architecture also emerged naturally in the Rust ecosystem as everyone searched for ways to model applications and services which adhere to Rust's [aliasing XOR mutability rule][aliasing-xor-mutability]. This can be seen with the rise of similar frameworks, such as [Sauron][sauron], [Relm4][relm4], and [tui-realm][tuirealm]. At any given point, the application's model is either being immutably borrowed by its view, or is being mutably borrowed by its update method. Thus it eliminates the need for shared references, interior mutability, and runtime borrow checking.
 
 To describe this in code, see the [iced.rs book][iced-rs-book] example here:
 
