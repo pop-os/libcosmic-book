@@ -1,42 +1,52 @@
 # Model-View-Update (MVU)
 
-The [Iced][iced] runtime is an implementation of the MVU (Model-View-Update) design pattern—also known as [TEA (The Elm Architecture)][tea]. The MVU design pattern is a functional approach to GUI design that consists of an event loop with ownership of the application's struct—aka the Model, a view function for generating a View from that model, and an update function for updating the Model.
+[Iced][iced] is a GUI libray for Rust which uses the MVU (Model-View-Update) architecture—also known as [TEA (The Elm Architecture)][tea]. The MVU architecture consists of a single event loop with exclusive ownership of the application model, a view function for creating views from the model, and an update function for updating the model. The model creates the view, the view is displayed to the user, the user sends inputs to the view, and any messages emitted by widgets in view are used to update the model.
 
-Similar to how Elm was created, this architecture also emerged naturally in the Rust ecosystem as everyone searched for ways to model applications and services which adhere to Rust's [aliasing XOR mutability rule][aliasing-xor-mutability]. This can be seen with the rise of similar frameworks, such as [Sauron][sauron], [Relm4][relm4], and [tui-realm][tuirealm]. At any given point, the application's model is either being immutably borrowed by its view, or is being mutably borrowed by its update method. Thus it eliminates the need for shared references, interior mutability, and runtime borrow checking.
-
-To describe this in code, see the [iced.rs book][iced-rs-book] example here:
+A simplified abstract code example is provided below.
 
 ```rs
 use magic::{display, interact};
 
 // Initialize the state
-let mut counter = Counter::default();
+let mut app = AppModel::init();
 
-// Be interactive. All the time! 
+// Be interactive. All the time!
 loop {
     // Run our view logic to obtain our interface
-    let interface = counter.view();
+    let view = view(&app);
 
     // Display the interface to the user
-    display(&interface);
+    display(&view);
 
     // Process the user interactions and obtain our messages
-    let messages = interact(&interface);
+    let messages = interact(&view);
 
     // Update our state by processing each message
     for message in messages {
-        counter.update(message);
+        update(&mut app);
     }
 }
 ```
 
-In each iteration of the event loop, the runtime calls the view method of the application's Model to create a new View. The View is a state machine whose purpose is both to describe the layout of the interface and how to draw it; and to be a streamlined pipeline for processing UI events and yielding any Messages from widgets in the View that they triggered. The View can efficiently borrow data directly from the Model because the View has the same lifetime as the borrowed Model.
+## View logic
 
-> Because the majority of the runtime is likely to be spent in drawing, the runtime will diff the layout and state of the View to detect when there is a need to redraw a node in the widget tree. The runtime will also cache certain elements between frames—such as images—to prevent the need to redraw them.
+In each iteration of the event loop, the runtime begins by calling the view function with a reference to the application's model. The application author will use this function to construct the entire layout of their interface. Combining widget elements together until they are one—the View.
 
-Once the View has been drawn, the runtime will wait for UI events—such as mouse and keyboard events—and process them directly through the View. Those events will be pass through various widgets which may emit any number of Messages in response. After the View has processed the UI event(s), the View is dropped and any received Messages will be passed through the Model's update method, which mutably borrows the Model.
+The View is a widget element itself that contains a tree of widget elements inside of it. Each with their own set of functions for performing layout, drawing, and event handling. Together, the View serves its role as a state machine that the runtime will use to render the application and the intercept application inputs.
 
-The update method uses pattern matching to find the appropriate branch to execute (which is much faster than dynamic dispatch), and the programmer can then update the model while running any application logic necessary. Once the update method has completed, the next iteration of the loop begins.
+Widgets in the View are stateless. They rely directly on the model as the single source of truth for their state. With the combination of Rust and the way the Iced library was architected, they can even borrow their values directly from the application model. Therefore, the View is a direct reflection of the current state of the model at any given point in time.
+
+As Views are replaced in each iteration, the runtime will use an optimization technique to compare the differences with the previous View in order to decide which widgets in the layout need to be redrawn, and if any cached widget data should be culled.
+
+> If you were to create a widget that contains an image, the runtime will retain any image buffers it generates from the source image for reuse as long as the image widget remains in the tree. Similarly, pre-rendered text buffers will also be cached for reuse.
+
+## Update logic
+
+After the View has been drawn, the runtime will wait for UI events to intercept—such as mouse and keyboard events—and pass them through the View's widget tree. Widgets that receive these events through their own internal update methods can decide to emit Message(s) to the runtime in response. The application author defines which messages will be emitted when those conditions are met.
+
+Once messages have been emitted, they are passed directly to the update function for the application author to handle. In addition to updating the state of the model, the application may also decide to spawn tasks for execution in the background. These will execute asynchronously on background thread(s), and may emit messages back to the runtime over the course of their execution.
+
+> Similar to how Elm was created, this architecture has emerged naturally across the Rust ecosystem as a viable and efficient method of modeling applications and services which adhere to Rust's [aliasing XOR mutability rule][aliasing-xor-mutability]. This can be seen with the rise of similar frameworks, such as [Sauron][sauron], [Relm4][relm4], and [tui-realm][tuirealm]. At any given point, the application's model is either being immutably borrowed by its view, or is being mutably borrowed by its update method. Thus it eliminates the need for shared references, interior mutability, and runtime borrow checking.
 
 [aliasing-xor-mutability]: https://cmpt-479-982.github.io/week1/safety_features_of_rust.html#the-borrow-checker-and-the-aliasing-xor-mutability-principle
 [iced]: https://iced.rs/
