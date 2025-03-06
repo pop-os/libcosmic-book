@@ -1,20 +1,29 @@
 # The Application Trait
 
-> Before beginning, I would recommend cloning the [COSMIC App Template][cosmic-app-template] to experiment with while reading the documentation below.
 
 ## Model
-
-Every application begins with the application model. All application state will be stored in this model, and it will be wise to cache data that will be needed by your application's widgets. It is important that it contains at least a [cosmic::app::Core][app-core], which will provide a way of interacting with certain aspects of the COSMIC app runtime.
 
 ```rs
 use cosmic::prelude::*;
 
-struct AppModel {
-    core: cosmic::app::Core,
+struct App {
     counter: u32,
     counter_text: String,
 }
 ```
+
+Every application begins with a model. This will be used as the single source of truth for your entire application and its GUI. This will include widget labels, text inputs, fetched icons, and any other values that need to be passed or referenced as input parameters when creating elements. Widgets are stateless, which means that they do not contain application state within themselves, but instead rely on the application model as the source for their state.
+
+```rs
+use cosmic::prelude::*;
+
+struct App {
+    core: cosmic::Core,
+    // ...
+}
+```
+
+The cosmic library also has some state of its own that you will need to store in your application model, refferred to as the [cosmic::Core][app-core]. This is managed internally by the cosmic runtime, but can also be used by the application to get and set certain runtime parameters.
 
 ## Message
 
@@ -71,7 +80,7 @@ fn init(core: Core, _flags: Self::Flags) -> (Self, Command<Self::Message>) {
     };
 
     app.counter_text = format!("Clicked {} times", app.counter);
-  
+
     let command = app.set_window_title("AppName");
 
     (app, command)
@@ -85,12 +94,12 @@ At the beginning of each iteration of the runtime's event loop, the [view method
 ```rs
 impl cosmic::Application for AppModel {
     ...
-    
+
     /// The returned Element has the same lifetime as the model being borrowed.
     fn view(&self) -> Element<Self::Message> {
         let button = widget::button(&self.counter_text)
             .on_press(Message::Clicked);
-            
+
         widget::container(button)
             .width(iced::Length::Fill)
             .height(iced::Length::Shrink)
@@ -110,7 +119,7 @@ Messages emitted by the view will later be passed through the application's [upd
 ```rs
 impl cosmic::Application for AppModel {
     ...
-    
+
     fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
         match message {
             Message::Clicked => {
@@ -118,7 +127,7 @@ impl cosmic::Application for AppModel {
                 self.counter_text = format!("Clicked {} times", self.counter);
             }
         }
-        
+
         Command::none()
     }
 }
@@ -140,7 +149,6 @@ fn main() -> cosmic::iced::Result {
 [app-core]: https://pop-os.github.io/libcosmic/cosmic/app/struct.Core.html
 [app-trait]: https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html
 [builder-pattern]: https://rust-unofficial.github.io/patterns/patterns/creational/builder.html
-[cosmic-app-template]: https://github.com/pop-os/cosmic-app-template
 [cosmic-widget]: https://pop-os.github.io/libcosmic/cosmic/widget/index.html
 [update-method]: https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#method.update
 [view-method]: https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#tymethod.view

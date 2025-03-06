@@ -3,7 +3,7 @@
 - [Introduction](./introduction.md)
 - [Model-View-Update (MVU)](./mvu.md)
 - [The Application Trait](./application-trait.md)
-    - [Commands](./commands.md)
+    - [Tasks](./tasks.md)
     - [Subscriptions](./subscriptions.md)
     - [Nav Bar](./nav-bar.md)
     - [Menu Bar](./menu-bar.md)
