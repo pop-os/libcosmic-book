@@ -34,36 +34,3 @@ Subscription::batch(vec![
     subscription3,
 ])
 ```
-
-## Forwarding messages from commands
-
-This trick enables Commands to yield Messages to the application before they are finished.
-
-```rs
-struct MessageForwarder;
-let subscription = cosmic::subscription::channel(
-    std::any::TypeId::of::<MessageForwarder>(),
-    4,
-    move |mut output| async move {
-        let (tx, mut rx) = tokio::sync::mpsc::channel::<Message>(4);
-
-        let _res = output.send(Message::RegisterSubscriptionSender(tx)).await;
-
-        while let Some(event) = rx.recv().await {
-            let _res = output.send(event).await;
-        }
-
-        futures::future::pending().await
-    },
-);
-```
-
-A channel will be created which sends its Sender directly to the application with a Message. You will store this message inside of your application like so:
-
-```rs
-Message::RegisterSubscriptionSender(sender) => {
-    self.sender = Some(sender);
-}
-```
-
-Then you can clone the sender when creating commands that need to forward messages back to the runtime.

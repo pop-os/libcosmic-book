@@ -72,7 +72,7 @@ impl cosmic::Application for AppModel {
 This is where your application model will be constructed, and any necessary tasks scheduled for execution on init. This will typically be where you want to set the name of the window title.
 
 ```rs
-fn init(core: Core, _flags: Self::Flags) -> (Self, Command<Self::Message>) {
+fn init(core: Core, _flags: Self::Flags) -> (Self, cosmic::app::Task<Self::Message>) {
     let mut app = AppModel {
         core,
         counter: 0,
@@ -120,7 +120,7 @@ Messages emitted by the view will later be passed through the application's [upd
 impl cosmic::Application for AppModel {
     ...
 
-    fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
+    fn update(&mut self, message: Self::Message) -> cosmic::app::Task<Self::Message> {
         match message {
             Message::Clicked => {
                 self.counter += 1;
@@ -128,12 +128,12 @@ impl cosmic::Application for AppModel {
             }
         }
 
-        Command::none()
+        Task::none()
     }
 }
 ```
 
-Because this method executes in the runtime's event loop, the application will block for the duration that this method is being called. It is therefore imperative that any application logic executed here should be swift to prevent the user from experiencing an application freeze. Anything that requires either asynchronous or long execution time should either be returned as a [Command](commands.md), or placed into a [Subscription](subscriptions.md).
+Because this method executes in the runtime's event loop, the application will block for the duration that this method is being called. It is therefore imperative that any application logic executed here should be swift to prevent the user from experiencing an application freeze. Anything that requires either asynchronous or long execution time should either be returned as a [Task](tasks.md), or placed into a [Subscription](subscriptions.md).
 
 ## Running the application
 
