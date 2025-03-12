@@ -3,9 +3,11 @@
 Since the update function is called from the same event loop that renders the application and processes user inputs, the GUI will block for the duration that the application spends inside of the update function. To avoid blocking the GUI, any operation(s) other than what is necessary to update the model should placed into tasks.
 
 ```rs
-cosmic::task::future(async move {
-    Message::BuildResult(build().await)
-})
+fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
+    cosmic::task::future(async move {
+        Message::BuildResult(build().await)
+    })
+}
 ```
 
 [Tasks][task] enable applications to execute operations asynchronously on background thread(s) without blocking the GUI. Returned as the output of the update function, they are spawned for concurrent execution on an async executor running on a background thread. Tasks based on [futures][rust-future] return their output as a message to the application upon completion. Whereas tasks based on [streams][rust-stream] can stream messages to the application throughout their execution.
@@ -15,16 +17,18 @@ cosmic::task::future(async move {
 However, for the same reason that the GUI blocks when an update function is executing, similar is true for the thread where the async executor is scheduling the execution of its futures. The default executor for COSMIC applications is a [tokio][tokio] runtime configured to use a single background thread for scheduling async tasks. So if the application needs to spawn many futures on the runtime to execute concurrently, any operation that would block the executor should be moved onto another thread with [tokio::task::spawn_blocking][spawn-blocking].
 
 ```rs
-match message {
-    Message::WorkUnitReceived(work_unit) => {
-        cosmic::task::future(async move {
-            Message::WorkUnitResult(tokio::spawn_blocking(move || {
-                fold_protein("0x23", 110, 80, 19, work_unit)
-            }).await)
-        })
-    }
+fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
+    match message {
+        Message::WorkUnitReceived(work_unit) => {
+            cosmic::task::future(async move {
+                Message::WorkUnitResult(tokio::spawn_blocking(move || {
+                    fold_protein("0x23", 110, 80, 19, work_unit)
+                }).await)
+            })
+        }
 
-    // ...
+        // ...
+    }
 }
 ```
 
@@ -35,18 +39,20 @@ The cosmic runtime has its own message type for handling updates to the cosmic r
 Since there are situations where applications may need to send messages to the cosmic runtime, all `Application` methods which return `Task`s are defined to return `cosmic::Task<cosmic::Action<Message>>`. This means that you may see a type error if you try to return a `cosmic::Task` directly with your application's `Message` type without mapping it `cosmic::Action::App` beforehand. The `cosmic::task` module contains functions which automatically convert application messages into `cosmic::Action<Message>`.
 
 ```rs
-// Create a task that emits an application message without needing to await the value.
-let app_task = cosmic::Task::done(Message::ApplicationEvent)
-    .map(cosmic::Action::from);
+fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
+    // Create a task that emits an application message without needing to await the value.
+    let app_task = cosmic::Task::done(Message::ApplicationEvent)
+        .map(cosmic::Action::from);
 
-// Create a cosmic action directly
-let show_window_menu = cosmic::Task::done(cosmic::app::Action::ShowWindowMenu)
-    .map(cosmic::Action::from);
+    // Create a cosmic action directly
+    let show_window_menu = cosmic::Task::done(cosmic::app::Action::ShowWindowMenu)
+        .map(cosmic::Action::from);
 
-// Use a helper from the ApplicationExt trait to create a cosmic task
-let set_window_title = self.set_window_title("Custom application title".into());
+    // Use a helper from the ApplicationExt trait to create a cosmic task
+    let set_window_title = self.set_window_title("Custom application title".into());
 
-cosmic::Task::batch(vec![app_task, show_window_menu, set_window_title])
+    cosmic::Task::batch(vec![app_task, show_window_menu, set_window_title])
+}
 ```
 
 
@@ -80,10 +86,69 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
 ## Streaming
 
-Alternatively, they can produced from any value that implements [Stream][rust-stream].
+Alternatively, they can produced from types which implement [Stream][rust-stream]. Such as from the receiving end of a channel which it is being pushed to from anothre thread.
+
+```rs
+fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
+    match message {
+        Message::Start => {
+            self.progress = Some(0);
+
+            let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+
+            std::thread::spawn(move || {
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(25));
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(50));
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(75));
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(100));
+            });
+
+            return cosmic::task::stream(tokio_stream::wrappers::UnboundedReceiverStream(rx));
+        }
+
+        Message::Progress(progress) => {
+            self.progress = Some(progress);
+        }
+    }
+
+    cosmic::Task::none()
+}
+```
 
 
 ## Channel
+
+Streams can be created directly from a future with an async channel using [cosmic::iced_futures::stream::channel][iced-channel-stream]. This is commonly used as an alternative to the lack of async generators in Rust.
+```rs
+fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
+    match message {
+        Message::Start => {
+            self.progress = Some(0);
+
+            return cosmic::task::channel(|tx| async move {
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(25)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(50)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(75)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(100)).await;
+            });
+        }
+
+        Message::Progress(progress) => {
+            self.progress = Some(progress);
+        }
+    }
+
+    cosmic::Task::none()
+}
+```
 
 ## Batches
 
@@ -145,7 +210,9 @@ This gives an abort handle to the application that you can store in your applica
 
 ```rs
 let (task, abort_handle) = cosmic::task::future(async move {
-
+    tokio::time::sleep(std::time::Duration::from_secs(3));
+    println!("task finished");
+    Message::Finished
 }));
 
 abort_handle.abort();
@@ -155,6 +222,7 @@ abort_handle.abort();
 [task]: https://pop-os.github.io/libcosmic/cosmic/iced_winit/runtime/struct.Task.html
 [cosmic-tasks]: https://pop-os.github.io/libcosmic/cosmic/task/index.html#functions
 [future]: https://pop-os.github.io/libcosmic/cosmic/task/fn.future.html
+[iced-channel-stream]: https://pop-os.github.io/libcosmic/iced_futures/stream/fn.channel.html
 [rust-future]: https://doc.rust-lang.org/stable/std/future/trait.Future.html
 [rust-stream]: https://pop-os.github.io/libcosmic/futures_core/stream/trait.Stream.html
 [spawn-blocking]: https://docs.rs/tokio/latest/tokio/task/fn.spawn_blocking.html
