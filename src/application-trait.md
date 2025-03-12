@@ -12,7 +12,9 @@ struct App {
 }
 ```
 
-Every application begins with a model. This will be used as the single source of truth for your entire application and its GUI. This will include widget labels, text inputs, fetched icons, and any other values that need to be passed or referenced as input parameters when creating elements. Widgets are stateless, which means that they do not contain application state within themselves, but instead rely on the application model as the source for their state.
+Every application begins with a model. This will be used as the single source of truth for your entire application and its GUI.
+This will include widget labels, text inputs, fetched icons, and any other values that need to be passed or referenced as input parameters when creating elements.
+Widgets are stateless, which means that they do not contain application state within themselves, but instead rely on the application model as the source for their state.
 
 ```rs
 use cosmic::prelude::*;
@@ -69,7 +71,8 @@ impl cosmic::Application for AppModel {
 
 ## Init
 
-This is where your application model will be constructed, and any necessary tasks scheduled for execution on init. This will typically be where you want to set the name of the window title.
+This is where your application model will be constructed, and any necessary tasks scheduled for execution on init.
+This will typically be where you want to set the name of the window title.
 
 ```rs
 fn init(core: Core, _flags: Self::Flags) -> (Self, cosmic::app::Task<Self::Message>) {
@@ -89,7 +92,8 @@ fn init(core: Core, _flags: Self::Flags) -> (Self, cosmic::app::Task<Self::Messa
 
 ## View
 
-At the beginning of each iteration of the runtime's event loop, the [view method][view-method] will be called to create a view which describes the current state of the UI. The returned state machine defines the layout of the interface, how it is to be drawn, and what messages widgets will emit when triggered by certain UI events.
+At the beginning of each iteration of the runtime's event loop, the [view method][view-method] will be called to create a view which describes the current state of the UI.
+The returned state machine defines the layout of the interface, how it is to be drawn, and what messages widgets will emit when triggered by certain UI events.
 
 ```rs
 impl cosmic::Application for AppModel {
@@ -110,11 +114,13 @@ impl cosmic::Application for AppModel {
 }
 ```
 
-This method will be composed from widget functions that you can get from the [cosmic::widget][cosmic-widget] module. Note that widgets are composed functionally, and therefore they are designed to have their fields set through a [Builder pattern][builder-pattern].
+This method will be composed from widget functions that you can get from the [cosmic::widget][cosmic-widget] module.
+Note that widgets are composed functionally, and therefore they are designed to have their fields set through a [Builder pattern][builder-pattern].
 
 ## Update
 
-Messages emitted by the view will later be passed through the application's [update method][update-method]. This will use Rust's pattern matching to choose a branch to execute, make any changes necessary to the application's model, and may optionally return one or more commands.
+Messages emitted by the view will later be passed through the application's [update method][update-method].
+This will use Rust's pattern matching to choose a branch to execute, make any changes necessary to the application's model, and may optionally return one or more commands.
 
 ```rs
 impl cosmic::Application for AppModel {
@@ -133,7 +139,9 @@ impl cosmic::Application for AppModel {
 }
 ```
 
-Because this method executes in the runtime's event loop, the application will block for the duration that this method is being called. It is therefore imperative that any application logic executed here should be swift to prevent the user from experiencing an application freeze. Anything that requires either asynchronous or long execution time should either be returned as a [Task](tasks.md), or placed into a [Subscription](subscriptions.md).
+Because this method executes in the runtime's event loop, the application will block for the duration that this method is being called.
+It is therefore imperative that any application logic executed here should be swift to prevent the user from experiencing an application freeze.
+Anything that requires either asynchronous or long execution time should either be returned as a [Task](tasks.md), or placed into a [Subscription](subscriptions.md).
 
 ## Running the application
 
