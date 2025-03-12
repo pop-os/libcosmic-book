@@ -107,7 +107,9 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
                 _ = tx.send(Message::Progress(100));
             });
 
-            return cosmic::task::stream(tokio_stream::wrappers::UnboundedReceiverStream(rx));
+            return cosmic::Task::stream(tokio_stream::wrappers::UnboundedReceiverStream(rx))
+                // Must wrap our app type in `cosmic::Action`.
+                .map(cosmic::Action::App);
         }
 
         Message::Progress(progress) => {
@@ -122,14 +124,16 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
 ## Channel
 
-Streams can be created directly from a future with an async channel using [cosmic::iced_futures::stream::channel][iced-channel-stream]. This is commonly used as an alternative to the lack of async generators in Rust.
+Streams can be created directly from a future with an async channel using [cosmic::iced_futures::stream::channel][iced-channel-stream].
+This is commonly used as an alternative to the lack of async generators in Rust.
+
 ```rs
 fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
     match message {
         Message::Start => {
             self.progress = Some(0);
 
-            return cosmic::task::channel(|tx| async move {
+            return cosmic::Task::stream(cosmic::iced_futures::stream::channel(|tx| async move {
                 tokio::time::sleep(std::time::Duration::from_secs(3)).await;
                 _ = tx.send(Message::Progress(25)).await;
                 tokio::time::sleep(std::time::Duration::from_secs(3)).await;
@@ -138,7 +142,9 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
                 _ = tx.send(Message::Progress(75)).await;
                 tokio::time::sleep(std::time::Duration::from_secs(3)).await;
                 _ = tx.send(Message::Progress(100)).await;
-            });
+            }))
+            // Must wrap our app type in `cosmic::Action`.
+            .map(cosmic::Action::App);
         }
 
         Message::Progress(progress) => {

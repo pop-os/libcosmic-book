@@ -18,6 +18,7 @@ Starting with `main` module:
 
 ```rs
 mod main {
+    #[derive(Debug, Clone)]
     pub enum Message {
         Loading { loading_time: std::time::Duration },
         Loaded { message: String },
