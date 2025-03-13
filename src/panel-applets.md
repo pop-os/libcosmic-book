@@ -12,6 +12,8 @@ This architecture has many security benefits, in addition to easing the burden o
 Once you know how to build a COSMIC application, you can already create applets with only a few adjustments to the application.
 First of which is to run the application with [cosmic::applet::run][applet-run] instead of `cosmic::app::run`.
 
+> Must enable the `applet` feature in libcosmic. May also want to remove `wgpu` to use a software renderer for lower memory usage.
+
 ```rs
 cosmic::applet::run::<Power>(())
 ```
