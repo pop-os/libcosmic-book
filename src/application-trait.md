@@ -52,7 +52,7 @@ Note that the following associated types and constants are required:
 We also need to provide methods to enable the COSMIC app runtime to access the application's Core.
 
 ```rs
-impl cosmic::Application for AppModel {
+impl cosmic::Application for App {
     type Executor = cosmic::executor::Default;
     type Flags = ();
     type Message = Message;
@@ -76,7 +76,7 @@ This will typically be where you want to set the name of the window title.
 
 ```rs
 fn init(core: Core, _flags: Self::Flags) -> (Self, cosmic::app::Task<Self::Message>) {
-    let mut app = AppModel {
+    let mut app = App {
         core,
         counter: 0,
         counter_text: String::new(),
@@ -96,7 +96,7 @@ At the beginning of each iteration of the runtime's event loop, the [view method
 The returned state machine defines the layout of the interface, how it is to be drawn, and what messages widgets will emit when triggered by certain UI events.
 
 ```rs
-impl cosmic::Application for AppModel {
+impl cosmic::Application for App {
     ...
 
     /// The returned Element has the same lifetime as the model being borrowed.
@@ -123,7 +123,7 @@ Messages emitted by the view will later be passed through the application's [upd
 This will use Rust's pattern matching to choose a branch to execute, make any changes necessary to the application's model, and may optionally return one or more commands.
 
 ```rs
-impl cosmic::Application for AppModel {
+impl cosmic::Application for App {
     ...
 
     fn update(&mut self, message: Self::Message) -> cosmic::app::Task<Self::Message> {
@@ -150,7 +150,7 @@ Once the trait has been implemented, you can run it from your main function like
 ```rs
 fn main() -> cosmic::iced::Result {
     let settings = cosmic::app::Settings::default();
-    cosmic::app::run::<AppModel>(settings, ())
+    cosmic::app::run::<App>(settings, ())
 }
 ```
 
