@@ -3,55 +3,121 @@
 Modules are used to encapsulate related private data into a central type; along with its own message type and functions.
 These could be individual pages of your application, sections of a page, or even a reusable widgets composed of smaller widgets.
 
-Below is a hypothetical application which contains two modules: `main` and `config`.
+Below is a hypothetical application which contains two modules: `todo` and `config`.
 Each containing their own respective `Page` and `Message` types.
 
 ```rs
 struct App {
     active_page: PageId,
-    main_page: main::Page,
+    todo_page: todo::Page,
     config_page: config::Page,
 }
 ```
 
-Starting with `main` module:
+Starting with `todo` page module, which manages todo tasks.
 
 ```rs
-mod main {
+mod todo {
+    use cosmic::prelude::*;
+    use cosmic::widget;
+
+    pub async fn load() -> Message {
+        // ..
+    }
+
     #[derive(Debug, Clone)]
     pub enum Message {
-        Loading { loading_time: std::time::Duration },
-        Loaded { message: String },
+        /// Add a new task
+        Add,
+        /// Edit an existing task
+        EditInput(usize, String),
+        /// Move the given task down
+        MoveDown(usize),
+        /// Move the given task up
+        MoveUp(usize),
+        /// Update the new task input editor
+        NewInput(String),
+        /// Remove an existing task
+        Remove(usize)
+        /// Save to disk
+        Save
     }
 
     pub struct Page {
-        loading_time: Option<std::time::Duration>,
-        message: String
+        new_task_input: String,
+        tasks: Vec<String>,
     }
 
     impl Page {
         pub fn view(&self) -> cosmic::Element<Message> {
-            // ...
+            // Where new tasks will be input before being added to the task list.
+            let new_task_input = widget::text_input("Write down a new task here", &self.new_task_input)
+                .on_input(Message::NewInput)
+                .on_submit(Message::Add);
+
+            // Fold each enumerated task into a widget that is pushed to a scrollable column.
+            let saved_tasks = self.tasks.iter()
+                .enumerate()
+                .fold(widget::column(), |column, (id, task)| {
+                    column.push(
+                        // A hypothetical widget created for this app
+                        crate::widget::task(task.as_str())
+                            .on_remove(Message::Remove(id))
+                            .on_input(|text| Message::EditInput(id, text))
+                            .on_move_down(Message::MoveDown(id))
+                            .on_move_up(Message::MoveUp(id))
+                            .into()
+                    )
+                })
+                .apply(widget::scrollable);
+
+            // Compose the above widgets into the column view.
+            widget::column::with_capacity(2)
+                .spacing(cosmic::theme::active().cosmic().spacing.space_l)
+                .push(new_task_input)
+                .push(saved_tasks)
+                .into()
         }
 
         pub fn update(&mut self, message: Message) -> cosmic::Task<cosmic::Action<Message>> {
             match message {
-                Message::Loading { loading_time } => {
-                    self.loading_time = Some(loading_time);
-
+                Message::Add => {
+                    self.tasks.insert(std::mem::take(&mut self.new_task_input));
                 }
 
-                Message::Loaded { message } => {
-                    self.message = message;
+                Message::EditInput(id, task) => {
+                    self.tasks[id] = task;
+                }
+
+                Message::MoveDown(id) => {
+                    if id + 1 < self.tasks.len() {
+                        self.tasks.swap(id, id + 1);
+                    }
+                }
+
+                Message::MoveUp(id) => {
+                    if id > 0 {
+                        self.tasks.swap(id, id - 1);
+                    }
+                }
+
+                Message::NewInput(input) => {
+                    self.new_task_input = input;
+                }
+
+                Message::Remove(id) => {
+                    self.tasks.remove(id);
+                }
+
+                Message::Save => {
+                    // Hypothetical method to save the tasks to disk.
+                    let save_future = self.save_to_disk();
+                    return cosmic::task::future(save_future);
                 }
             }
 
             cosmic::Task::none()
         }
-    }
-
-    pub async fn load() -> Message {
-        // ..
     }
 }
 ```
@@ -75,7 +141,7 @@ mod config {
 
     impl Page {
         pub fn view(&self) -> cosmic::Element<Message> {
-            // ...
+            // Hypothetical config page
         }
 
         pub fn update(&mut self, message: Message) -> cosmic::Task<cosmic::Action<Message>> {
@@ -103,20 +169,20 @@ We can then use them in your application's own native view and update functions 
 enum Message {
     SetPage(PageId),
     ConfigPage(config::Message),
-    MainPage(main::Message),
+    TodoPage(todo::Message),
 }
 
 #[derive(Debug, Clone)]
 enum PageId {
     Config
-    Main,
+    Todo,
 }
 
 // ...
 
 fn view(&self) -> cosmic::Element<Message> {
     match self.active_page {
-        PageId::Main => self.main_page.view(),
+        PageId::Todo => self.todo_page.view(),
         PageId::Config => self.config_page.view(),
     }
 }
@@ -128,19 +194,24 @@ fn update(&mut self, message: Message) -> cosmic::Task<cosmic::Action<Message>> 
 
             match self.active_page {
                 PageId::Config => (),
-                PageId::Main => return cosmic::task::future(async move {
-                    Message::MainPage(main::load().await)
+                PageId::Todo => return cosmic::task::future(async move {
+                    Message::TodoPage(todo::load().await)
                 }),
             }
         }
 
         Message::ConfigPage(message) => return self.config_page.update(message),
 
-        Message::MainPage(message) => return self.main_page.update(message),
+        Message::TodoPage(message) => return self.todo_page.update(message),
     }
 }
 
 ```
 
-> While you may be tempted to combine the two together into a single `Page` module, it is important to avoid planning too far ahead of the needs of your application.
-> Pages may be similar, but they are not the same.
+We may even implement the `Application::on_close_requested()` method in our app to handle that `Save` message for our `todo` page.
+
+```rs
+fn on_close_requested(&mut self) -> Option<Message> {
+    Some(Message::TodoPage(todo::Message::Save))
+}
+```

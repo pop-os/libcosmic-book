@@ -3,9 +3,6 @@
 Rust's first class support for sum types and pattern matching can be used to implement state machines which apply transitions from one state to another.
 This can be useful to enable the application to discard data that is no longer relevant for the current state of the application.
 
-Using the previous example, we will define an application that can only contain the model for the active page.
-Each of which will also have their own internal states that transition as messages are received.
-
 ```rs
 enum Page {
     AboutPage(about::Page),
