@@ -12,4 +12,5 @@
   - [Nav Bar](./nav-bar.md)
   - [Menu Bar](./menu-bar.md)
   - [Context Drawer](./context-drawer.md)
+- [Panel Applets](./panel-applets.md)
 - [Dialogs](./dialogs.md)
