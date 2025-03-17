@@ -36,7 +36,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
 The cosmic runtime has its own message type for handling updates to the cosmic runtime: `cosmic::app::Action`. To enable the cosmic runtime to handle messages simultaneously for itself and the application, the application's `Message` type is wrapped alongside `cosmic::app::Action` in the `cosmic::Action<Message>` type.
 
-Since there are situations where applications may need to send messages to the cosmic runtime, all `Application` methods which return `Task`s are defined to return `cosmic::Task<cosmic::Action<Message>>`. This means that you may see a type error if you try to return a `cosmic::Task` directly with your application's `Message` type without mapping it `cosmic::Action::App` beforehand. The `cosmic::task` module contains functions which automatically convert application messages into `cosmic::Action<Message>`.
+Since there are situations where applications may need to send messages to the cosmic runtime, all `Application` methods which return `Task`s are defined to return `cosmic::Task<cosmic::Action<Message>>`. This means that you may see a type error if you try to return a `cosmic::Task` directly with your application's `Message` type without mapping it to `cosmic::Action::App` beforehand. The `cosmic::task` module contains functions which automatically convert application messages into `cosmic::Action<Message>`.
 
 ```rs
 fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
@@ -67,7 +67,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
             self.counter += 1;
             self.counter_text = format!("Clicked {} times", self.counter);
 
-            // Await for 3 seconds in the background, and then request to decrease the counter.
+            // Wait for 3 seconds in the background, and then request to decrease the counter.
             return cosmic::task::future(async move {
                 tokio::time::sleep(Duration::from_millis(3000)).await;
                 Message::Decrease
@@ -86,7 +86,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
 ## Streaming
 
-Alternatively, they can produced from types which implement [Stream][rust-stream]. Such as from the receiving end of a channel which it is being pushed to from anothre thread.
+Alternatively, they can be produced from types which implement [Stream][rust-stream], such as from the receiving end of a channel, which is being pushed to from another thread.
 
 ```rs
 fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
@@ -173,7 +173,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
             // Run two async tasks concurrently.
             return cosmic::task::batch(vec![
-                // Await for 3 seconds in the background, and then request to decrease the counter.
+                // Wait for 3 seconds in the background, and then request to decrease the counter.
                 cosmic::task::future(async move {
                     tokio::time::sleep(Duration::from_millis(3000)).await;
                     Message::Decrease

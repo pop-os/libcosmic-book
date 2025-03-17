@@ -1,4 +1,4 @@
-# MenuBar
+# Menu Bar
 
 It is also recommended for applications to provide menu bars whenever they have sufficient need to display a variety of selectable options. See the [cosmic::widget::menus][menus] module for more details on the APIs available for menu creation.
 
@@ -29,7 +29,7 @@ impl menu::Action for MenuAction {
 }
 ```
 
-## Keybindings
+## Key Bindings
 
 Your preferred key bindings for these menu actions should also be attached to your application's model.
 

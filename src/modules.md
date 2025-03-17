@@ -1,7 +1,7 @@
 # Modules
 
 Modules are used to encapsulate related private data into a central type; along with its own message type and functions.
-These could be individual pages of your application, sections of a page, or even a reusable widgets composed of smaller widgets.
+These could be individual pages of your application, sections of a page, or even reusable widgets composed of smaller widgets.
 
 Below is a hypothetical application which contains two modules: `todo` and `config`.
 Each containing their own respective `Page` and `Message` types.
@@ -14,7 +14,7 @@ struct App {
 }
 ```
 
-Starting with `todo` page module, which manages todo tasks.
+Starting with the `todo` page module, which manages todo tasks.
 
 ```rs
 mod todo {
