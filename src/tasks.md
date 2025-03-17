@@ -67,7 +67,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
             self.counter += 1;
             self.counter_text = format!("Clicked {} times", self.counter);
 
-            // Wait for 3 seconds in the background, and then request to decrease the counter.
+            // Await for 3 seconds in the background, and then request to decrease the counter.
             return cosmic::task::future(async move {
                 tokio::time::sleep(Duration::from_millis(3000)).await;
                 Message::Decrease
@@ -173,7 +173,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
             // Run two async tasks concurrently.
             return cosmic::task::batch(vec![
-                // Wait for 3 seconds in the background, and then request to decrease the counter.
+                // Await for 3 seconds in the background, and then request to decrease the counter.
                 cosmic::task::future(async move {
                     tokio::time::sleep(Duration::from_millis(3000)).await;
                     Message::Decrease
