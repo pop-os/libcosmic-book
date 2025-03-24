@@ -165,11 +165,24 @@ mod config {
 We can then use them in your application's own native view and update functions like so:
 
 ```rs
+use std::
 #[derive(Debug, Clone)]
 enum Message {
     SetPage(PageId),
     ConfigPage(config::Message),
     TodoPage(todo::Message),
+}
+
+impl From<config::Message> for Message {
+    fn from(message: config::Message) -> Self {
+        Self::ConfigPage(config::Message)
+    }
+}
+
+impl From<todo::Message> for Message {
+    fn from(message: todo::Message) -> Self {
+        Self::TodoPage(todo::Message)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -182,8 +195,8 @@ enum PageId {
 
 fn view(&self) -> cosmic::Element<Message> {
     match self.active_page {
-        PageId::Todo => self.todo_page.view(),
-        PageId::Config => self.config_page.view(),
+        PageId::Todo => self.todo_page.view().map(Message::TodoPage),
+        PageId::Config => self.config_page.view().map(Message::ConfigPage),
     }
 }
 
@@ -200,9 +213,13 @@ fn update(&mut self, message: Message) -> cosmic::Task<cosmic::Action<Message>> 
             }
         }
 
-        Message::ConfigPage(message) => return self.config_page.update(message),
+        Message::ConfigPage(message) => {
+            self.config_page.update(message).map(Into::into)
+        }
 
-        Message::TodoPage(message) => return self.todo_page.update(message),
+        Message::TodoPage(message) => {
+            self.todo_page.update(message).map(Into::into)
+        }
     }
 }
 
