@@ -1,0 +1,1263 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>COSMIC Toolkit</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">COSMIC Toolkit</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<blockquote>
+<p>Before beginning, I would recommend using the official <a href="https://github.com/pop-os/cosmic-app-template">COSMIC App Template</a> to build applications with while reading the documentation below. You can generate a cosmic application using the <a href="https://github.com/cargo-generate/cargo-generate">cargo-generate</a> utility with <code>cargo generate gh:pop-os/cosmic-app-template</code>.</p>
+</blockquote>
+<p><a href="https://github.com/pop-os/libcosmic">libcosmic</a> is a GUI toolkit for creating <a href="cosmic">COSMIC</a>-themed applets and applications.
+Based on the cross-platform <a href="https://iced.rs/">iced</a> GUI library—which it utilizes for its runtime and rendering primitives—the COSMIC toolkit features an advanced and responsive widget library based on COSMIC's design language, which supports personalizable desktop themes, cross-desktop theming integrations, a consistent interface guidelines, a standardized configuration system, and platform integrations.</p>
+<p>Although the toolkit was created for the COSMIC desktop environment, it is also cross-platform, and thus it can be used to build COSMIC-themed applications for any Linux distribution (X11 &amp; Wayland), <a href="redox-os">Redox OS</a>, Windows, Mac, and even mobile platforms like Android.
+The goal of the cosmic library is to enable the creation of a cross-platform ecosystem of desktop applications that are easy to port from one OS to another.
+We would also welcome any that would like to build their own OS experiences with the COSMIC toolkit.</p>
+<blockquote>
+<p>As a Rust-based GUI toolkit, experience with <a href="rust">Rust</a> is required.
+Rust's rich type system and language features are key to what makes the COSMIC toolkit a much friendlier developer experience—enabling secure, reliable, and efficient applications to be developed at a faster pace than would be possible otherwise.
+For those interested in learning Rust, there are a lot of good resources available: <a href="https://www.manning.com/books/learn-rust-in-a-month-of-lunches">Learn Rust in a Month of Lunches</a>, <a href="https://www.manning.com/books/rust-in-action">Rust in Action</a>, <a href="https://doc.rust-lang.org/rust-by-example/">Rust by Example</a>, the official <a href="https://doc.rust-lang.org/stable/book/">Rust Book</a>, and <a href="https://github.com/rust-lang/rustlings">Rustlings</a>.</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="model-view-update-mvu"><a class="header" href="#model-view-update-mvu">Model-View-Update (MVU)</a></h1>
+<p><a href="https://iced.rs/">Iced</a> is a GUI libray for Rust which uses the MVU (Model-View-Update) architecture—also known as <a href="https://guide.elm-lang.org/architecture/">TEA (The Elm Architecture)</a>. The MVU architecture consists of a single event loop with exclusive ownership of the application model, a view function for creating views from the model, and an update function for updating the model. The model creates the view, the view is displayed to the user, the user sends inputs to the view, and any messages emitted by widgets in view are used to update the model.</p>
+<p>A simplified abstract code example is provided below.</p>
+<pre><code class="language-rs">use magic::{display, interact};
+
+// Initialize the state
+let mut app = AppModel::init();
+
+// Be interactive. All the time!
+loop {
+    // Run our view logic to obtain our interface
+    let view = view(&amp;app);
+
+    // Display the interface to the user
+    display(&amp;view);
+
+    // Process the user interactions and obtain our messages
+    let messages = interact(&amp;view);
+
+    // Update our state by processing each message
+    for message in messages {
+        update(&amp;mut app);
+    }
+}
+</code></pre>
+<h2 id="view-logic"><a class="header" href="#view-logic">View logic</a></h2>
+<p>In each iteration of the event loop, the runtime begins by calling the view function with a reference to the application's model. The application author will use this function to construct the entire layout of their interface. Combining widget elements together until they are one—the View.</p>
+<p>The View is a widget element itself that contains a tree of widget elements inside of it. Each with their own set of functions for performing layout, drawing, and event handling. Together, the View serves its role as a state machine that the runtime will use to render the application and the intercept application inputs.</p>
+<p>Widgets in the View are stateless. They rely directly on the model as the single source of truth for their state. With the combination of Rust and the way the Iced library was architected, they can even borrow their values directly from the application model. Therefore, the View is a direct reflection of the current state of the model at any given point in time.</p>
+<p>As Views are replaced in each iteration, the runtime will use an optimization technique to compare the differences with the previous View in order to decide which widgets in the layout need to be redrawn, and if any cached widget data should be culled.</p>
+<blockquote>
+<p>If you were to create a widget that contains an image, the runtime will retain any image buffers it generates from the source image for reuse as long as the image widget remains in the tree. Similarly, pre-rendered text buffers will also be cached for reuse.</p>
+</blockquote>
+<h2 id="update-logic"><a class="header" href="#update-logic">Update logic</a></h2>
+<p>After the View has been drawn, the runtime will wait for UI events to intercept—such as mouse and keyboard events—and pass them through the View's widget tree. Widgets that receive these events through their own internal update methods can decide to emit Message(s) to the runtime in response. The application author defines which messages will be emitted when those conditions are met.</p>
+<p>Once messages have been emitted, they are passed directly to the update function for the application author to handle. In addition to updating the state of the model, the application may also decide to spawn tasks for execution in the background. These will execute asynchronously on background thread(s), and may emit messages back to the runtime over the course of their execution.</p>
+<blockquote>
+<p>Similar to how Elm was created, this architecture has emerged naturally across the Rust ecosystem as a viable and efficient method of modeling applications and services which adhere to Rust's <a href="https://cmpt-479-982.github.io/week1/safety_features_of_rust.html#the-borrow-checker-and-the-aliasing-xor-mutability-principle">aliasing XOR mutability rule</a>. This can be seen with the rise of similar frameworks, such as <a href="https://crates.io/crates/sauron">Sauron</a>, <a href="https://crates.io/crates/relm4">Relm4</a>, and <a href="https://crates.io/crates/tuirealm">tui-realm</a>. At any given point, the application's model is either being immutably borrowed by its view, or is being mutably borrowed by its update method. Thus it eliminates the need for shared references, interior mutability, and runtime borrow checking.</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-application-trait"><a class="header" href="#the-application-trait">The Application Trait</a></h1>
+<h2 id="model"><a class="header" href="#model">Model</a></h2>
+<pre><code class="language-rs">use cosmic::prelude::*;
+
+struct App {
+    counter: u32,
+    counter_text: String,
+}
+</code></pre>
+<p>Every application begins with a model. This will be used as the single source of truth for your entire application and its GUI.
+This will include widget labels, text inputs, fetched icons, and any other values that need to be passed or referenced as input parameters when creating elements.
+Widgets are stateless, which means that they do not contain application state within themselves, but instead rely on the application model as the source for their state.</p>
+<pre><code class="language-rs">use cosmic::prelude::*;
+
+struct App {
+    core: cosmic::Core,
+    // ...
+}
+</code></pre>
+<p>The cosmic library also has some state of its own that you will need to store in your application model, refferred to as the <a href="https://pop-os.github.io/libcosmic/cosmic/app/struct.Core.html">cosmic::Core</a>. This is managed internally by the cosmic runtime, but can also be used by the application to get and set certain runtime parameters.</p>
+<h2 id="message"><a class="header" href="#message">Message</a></h2>
+<p>Alongside that struct, there will also be a Message type, which describes the kinds of events that widgets in the applications are going to emit.</p>
+<pre><code class="language-rs">#[derive(Debug, Clone)]
+pub enum Message {
+    Clicked
+}
+</code></pre>
+<h2 id="the-trait"><a class="header" href="#the-trait">The Trait</a></h2>
+<p>Together, these will be used to create a <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html">cosmic::Application</a>. Implementing this trait will automatically generate all of the necessary code to run a COSMIC application which integrates consistently within the COSMIC desktop.</p>
+<p>Note that the following associated types and constants are required:</p>
+<ul>
+<li><code>Executor</code> is the async executor that will be used to run your application's commands.</li>
+<li><code>Flags</code> is the data that your application needs to use before it starts.</li>
+<li><code>Message</code> is the enum that contains all the possible variants that your application will need to transmit messages.</li>
+<li><code>APP_ID</code> is the unique identifier of your application.</li>
+</ul>
+<p>We also need to provide methods to enable the COSMIC app runtime to access the application's Core.</p>
+<pre><code class="language-rs">impl cosmic::Application for App {
+    type Executor = cosmic::executor::Default;
+    type Flags = ();
+    type Message = Message;
+
+    const APP_ID: &amp;str = "tld.domain.AppName";
+
+    fn core(&amp;self) -&gt; &amp;Core {
+        &amp;self.core
+    }
+
+    fn core_mut(&amp;mut self) -&gt; &amp;mut Core {
+        &amp;mut self.core
+    }
+}
+</code></pre>
+<h2 id="init"><a class="header" href="#init">Init</a></h2>
+<p>This is where your application model will be constructed, and any necessary tasks scheduled for execution on init.
+This will typically be where you want to set the name of the window title.</p>
+<pre><code class="language-rs">fn init(core: Core, _flags: Self::Flags) -&gt; (Self, cosmic::app::Task&lt;Self::Message&gt;) {
+    let mut app = App {
+        core,
+        counter: 0,
+        counter_text: String::new(),
+    };
+
+    app.counter_text = format!("Clicked {} times", app.counter);
+
+    let command = app.set_window_title("AppName");
+
+    (app, command)
+}
+</code></pre>
+<h2 id="view"><a class="header" href="#view">View</a></h2>
+<p>At the beginning of each iteration of the runtime's event loop, the <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#tymethod.view">view method</a> will be called to create a view which describes the current state of the UI.
+The returned state machine defines the layout of the interface, how it is to be drawn, and what messages widgets will emit when triggered by certain UI events.</p>
+<pre><code class="language-rs">impl cosmic::Application for App {
+    ...
+
+    /// The returned Element has the same lifetime as the model being borrowed.
+    fn view(&amp;self) -&gt; Element&lt;Self::Message&gt; {
+        let button = widget::button(&amp;self.counter_text)
+            .on_press(Message::Clicked);
+
+        widget::container(button)
+            .width(iced::Length::Fill)
+            .height(iced::Length::Shrink)
+            .center_x()
+            .center_y()
+            .into()
+    }
+}
+</code></pre>
+<p>This method will be composed from widget functions that you can get from the <a href="https://pop-os.github.io/libcosmic/cosmic/widget/index.html">cosmic::widget</a> module.
+Note that widgets are composed functionally, and therefore they are designed to have their fields set through a <a href="https://rust-unofficial.github.io/patterns/patterns/creational/builder.html">Builder pattern</a>.</p>
+<h2 id="update"><a class="header" href="#update">Update</a></h2>
+<p>Messages emitted by the view will later be passed through the application's <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#method.update">update method</a>.
+This will use Rust's pattern matching to choose a branch to execute, make any changes necessary to the application's model, and may optionally return one or more commands.</p>
+<pre><code class="language-rs">impl cosmic::Application for App {
+    ...
+
+    fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::app::Task&lt;Self::Message&gt; {
+        match message {
+            Message::Clicked =&gt; {
+                self.counter += 1;
+                self.counter_text = format!("Clicked {} times", self.counter);
+            }
+        }
+
+        Task::none()
+    }
+}
+</code></pre>
+<p>Because this method executes in the runtime's event loop, the application will block for the duration that this method is being called.
+It is therefore imperative that any application logic executed here should be swift to prevent the user from experiencing an application freeze.
+Anything that requires either asynchronous or long execution time should either be returned as a <a href="tasks.html">Task</a>, or placed into a <a href="subscriptions.html">Subscription</a>.</p>
+<h2 id="running-the-application"><a class="header" href="#running-the-application">Running the application</a></h2>
+<p>Once the trait has been implemented, you can run it from your main function like so:</p>
+<pre><code class="language-rs">fn main() -&gt; cosmic::iced::Result {
+    let settings = cosmic::app::Settings::default();
+    cosmic::app::run::&lt;App&gt;(settings, ())
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tasks"><a class="header" href="#tasks">Tasks</a></h1>
+<p>Since the update function is called from the same event loop that renders the application and processes user inputs, the GUI will block for the duration that the application spends inside of the update function. To avoid blocking the GUI, any operation(s) other than what is necessary to update the model should placed into tasks.</p>
+<pre><code class="language-rs">fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Self::Message&gt;&gt; {
+    cosmic::task::future(async move {
+        Message::BuildResult(build().await)
+    })
+}
+</code></pre>
+<p><a href="https://pop-os.github.io/libcosmic/cosmic/iced_winit/runtime/struct.Task.html">Tasks</a> enable applications to execute operations asynchronously on background thread(s) without blocking the GUI. Returned as the output of the update function, they are spawned for concurrent execution on an async executor running on a background thread. Tasks based on <a href="https://doc.rust-lang.org/stable/std/future/trait.Future.html">futures</a> return their output as a message to the application upon completion. Whereas tasks based on <a href="https://pop-os.github.io/libcosmic/futures_core/stream/trait.Stream.html">streams</a> can stream messages to the application throughout their execution.</p>
+<h2 id="avoid-blocking-the-async-executor"><a class="header" href="#avoid-blocking-the-async-executor">Avoid blocking the async executor</a></h2>
+<p>However, for the same reason that the GUI blocks when an update function is executing, similar is true for the thread where the async executor is scheduling the execution of its futures. The default executor for COSMIC applications is a <a href="https://tokio.rs/">tokio</a> runtime configured to use a single background thread for scheduling async tasks. So if the application needs to spawn many futures on the runtime to execute concurrently, any operation that would block the executor should be moved onto another thread with <a href="https://docs.rs/tokio/latest/tokio/task/fn.spawn_blocking.html">tokio::task::spawn_blocking</a>.</p>
+<pre><code class="language-rs">fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Self::Message&gt;&gt; {
+    match message {
+        Message::WorkUnitReceived(work_unit) =&gt; {
+            cosmic::task::future(async move {
+                Message::WorkUnitResult(tokio::spawn_blocking(move || {
+                    fold_protein("0x23", 110, 80, 19, work_unit)
+                }).await)
+            })
+        }
+
+        // ...
+    }
+}
+</code></pre>
+<h2 id="cosmic-actions"><a class="header" href="#cosmic-actions">COSMIC Actions</a></h2>
+<p>The cosmic runtime has its own message type for handling updates to the cosmic runtime: <code>cosmic::app::Action</code>. To enable the cosmic runtime to handle messages simultaneously for itself and the application, the application's <code>Message</code> type is wrapped alongside <code>cosmic::app::Action</code> in the <code>cosmic::Action&lt;Message&gt;</code> type.</p>
+<p>Since there are situations where applications may need to send messages to the cosmic runtime, all <code>Application</code> methods which return <code>Task</code>s are defined to return <code>cosmic::Task&lt;cosmic::Action&lt;Message&gt;&gt;</code>. This means that you may see a type error if you try to return a <code>cosmic::Task</code> directly with your application's <code>Message</code> type without mapping it <code>cosmic::Action::App</code> beforehand. The <code>cosmic::task</code> module contains functions which automatically convert application messages into <code>cosmic::Action&lt;Message&gt;</code>.</p>
+<pre><code class="language-rs">fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Self::Message&gt;&gt; {
+    // Create a task that emits an application message without needing to await the value.
+    let app_task = cosmic::Task::done(Message::ApplicationEvent)
+        .map(cosmic::Action::from);
+
+    // Create a cosmic action directly
+    let show_window_menu = cosmic::Task::done(cosmic::app::Action::ShowWindowMenu)
+        .map(cosmic::Action::from);
+
+    // Use a helper from the ApplicationExt trait to create a cosmic task
+    let set_window_title = self.set_window_title("Custom application title".into());
+
+    cosmic::Task::batch(vec![app_task, show_window_menu, set_window_title])
+}
+</code></pre>
+<h2 id="futures"><a class="header" href="#futures">Futures</a></h2>
+<p>Tasks may be created from futures using <a href="future">cosmic::task::future</a>.</p>
+<pre><code class="language-rs">fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Self::Message&gt;&gt; {
+    match message {
+        Message::Clicked =&gt; {
+            self.counter += 1;
+            self.counter_text = format!("Clicked {} times", self.counter);
+
+            // Await for 3 seconds in the background, and then request to decrease the counter.
+            return cosmic::task::future(async move {
+                tokio::time::sleep(Duration::from_millis(3000)).await;
+                Message::Decrease
+            });
+        }
+
+        Message::Decrease =&gt;  {
+            self.counter -= 1;
+            self.counter_text = format!("Clicked {} times", self.counter);
+        }
+    }
+
+    Command::none()
+}
+</code></pre>
+<h2 id="streaming"><a class="header" href="#streaming">Streaming</a></h2>
+<p>Alternatively, they can produced from types which implement <a href="https://pop-os.github.io/libcosmic/futures_core/stream/trait.Stream.html">Stream</a>. Such as from the receiving end of a channel which it is being pushed to from anothre thread.</p>
+<pre><code class="language-rs">fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Self::Message&gt;&gt; {
+    match message {
+        Message::Start =&gt; {
+            self.progress = Some(0);
+
+            let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+
+            std::thread::spawn(move || {
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(25));
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(50));
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(75));
+                std::thread::sleep(std::time::Duration::from_secs(3));
+                _ = tx.send(Message::Progress(100));
+            });
+
+            return cosmic::Task::stream(tokio_stream::wrappers::UnboundedReceiverStream(rx))
+                // Must wrap our app type in `cosmic::Action`.
+                .map(cosmic::Action::App);
+        }
+
+        Message::Progress(progress) =&gt; {
+            self.progress = Some(progress);
+        }
+    }
+
+    cosmic::Task::none()
+}
+</code></pre>
+<h2 id="channel"><a class="header" href="#channel">Channel</a></h2>
+<p>Streams can be created directly from a future with an async channel using <a href="https://pop-os.github.io/libcosmic/iced_futures/stream/fn.channel.html">cosmic::iced_futures::stream::channel</a>.
+This is commonly used as an alternative to the lack of async generators in Rust.</p>
+<pre><code class="language-rs">fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Self::Message&gt;&gt; {
+    match message {
+        Message::Start =&gt; {
+            self.progress = Some(0);
+
+            return cosmic::Task::stream(cosmic::iced_futures::stream::channel(|tx| async move {
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(25)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(50)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(75)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                _ = tx.send(Message::Progress(100)).await;
+            }))
+            // Must wrap our app type in `cosmic::Action`.
+            .map(cosmic::Action::App);
+        }
+
+        Message::Progress(progress) =&gt; {
+            self.progress = Some(progress);
+        }
+    }
+
+    cosmic::Task::none()
+}
+</code></pre>
+<h2 id="batches"><a class="header" href="#batches">Batches</a></h2>
+<p>They can also be <a href="https://pop-os.github.io/libcosmic/cosmic/task/fn.batch.html">batched</a> for concurrent execution, where messages will be received in the order of completion.</p>
+<pre><code class="language-rs">fn update(&amp;mut self, message: Self::Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Self::Message&gt;&gt; {
+    match message {
+        Message::BatchStarted =&gt; {
+            eprintln!("started handling batch");
+        }
+
+        Message::Clicked =&gt; {
+            self.counter += 1;
+            self.counter_text = format!("Clicked {} times", self.counter);
+
+            // Run two async tasks concurrently.
+            return cosmic::task::batch(vec![
+                // Await for 3 seconds in the background, and then request to decrease the counter.
+                cosmic::task::future(async move {
+                    tokio::time::sleep(Duration::from_millis(3000)).await;
+                    Message::Decrease
+                }),
+                // Immediately returns a message without waiting.
+                cosmic::task::message(Message::BatchStarted)
+            ]);
+        }
+
+        Message::Decrease =&gt;  {
+            self.counter -= 1;
+            self.counter_text = format!("Clicked {} times", self.counter);
+        }
+    }
+
+    Command::none()
+}
+</code></pre>
+<h2 id="widget-operations"><a class="header" href="#widget-operations">Widget Operations</a></h2>
+<p>They can also be used to perform an operation onto a widget, such as focusing a button or text input.</p>
+<pre><code class="language-rs">return cosmic::widget::button::focus(self.BUTTON_ID);
+</code></pre>
+<h2 id="chaining"><a class="header" href="#chaining">Chaining</a></h2>
+<p>If you need to configure multiple tasks for execution, where some tasks depend on the completion of another before they start, the <code>Task::chain</code> method can be used to allow the execution of one task to begin only after the first has finished.</p>
+<pre><code class="language-rs">cosmic::task::future(async move { build().await })
+    .chain(cosmic::task::future(async move { clean().await }))
+</code></pre>
+<h2 id="aborting"><a class="header" href="#aborting">Aborting</a></h2>
+<p>This gives an abort handle to the application that you can store in your application to cancel a running task.</p>
+<pre><code class="language-rs">let (task, abort_handle) = cosmic::task::future(async move {
+    tokio::time::sleep(std::time::Duration::from_secs(3));
+    println!("task finished");
+    Message::Finished
+}));
+
+abort_handle.abort();
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="subscriptions"><a class="header" href="#subscriptions">Subscriptions</a></h1>
+<p>Subscriptions are long-running async tasks which listen for external events passively, and forward Messages back to the application runtime. They can be used to continuously monitor events for the entire lifetime of the application.</p>
+<h2 id="channels"><a class="header" href="#channels">Channels</a></h2>
+<p>The most common form of a subscription will be that of a channel. This will effectively behave as an async generator which yields messages to the application runtime. The source of your events could be from a channel, async stream, or a custom event loop.</p>
+<pre><code class="language-rs">struct MySubscription;
+let subscription = cosmic::subscription::channel(
+    std::any::TypeId::of::&lt;MySubscription&gt;(),
+    4,
+    move |mut output| async move {
+        let stream = streamable_operation();
+
+        while let Some(event) = stream.next().await {
+            let _res = output.send(Message::StreamedMessage(event)).await;
+        }
+
+        futures::future::pending().await
+    },
+);
+</code></pre>
+<h2 id="batches-1"><a class="header" href="#batches-1">Batches</a></h2>
+<p>If your application needs more than one Subscription, you can batch them together in one with <code>Subscription::batch</code>.</p>
+<pre><code class="language-rs">Subscription::batch(vec![
+    subscription1,
+    subscription2,
+    subscription3,
+])
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="structure"><a class="header" href="#structure">Structure</a></h1>
+<p>As the complexity of the application increases, so too does the needs of the application's model, messages, and logic.
+To prevent the application from becoming untenable, it will be necessary to periodically organize the structure of the application.
+There are two primary methods of reducing the complexity of your application model and logic: modules and states.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="modules"><a class="header" href="#modules">Modules</a></h1>
+<p>Modules are used to encapsulate related private data into a central type; along with its own message type and functions.
+These could be individual pages of your application, sections of a page, or even a reusable widgets composed of smaller widgets.</p>
+<p>Below is a hypothetical application which contains two modules: <code>todo</code> and <code>config</code>.
+Each containing their own respective <code>Page</code> and <code>Message</code> types.</p>
+<pre><code class="language-rs">struct App {
+    active_page: PageId,
+    todo_page: todo::Page,
+    config_page: config::Page,
+}
+</code></pre>
+<p>Starting with <code>todo</code> page module, which manages todo tasks.</p>
+<pre><code class="language-rs">mod todo {
+    use cosmic::prelude::*;
+    use cosmic::widget;
+
+    pub async fn load() -&gt; Message {
+        // ..
+    }
+
+    #[derive(Debug, Clone)]
+    pub enum Message {
+        /// Add a new task
+        Add,
+        /// Edit an existing task
+        EditInput(usize, String),
+        /// Move the given task down
+        MoveDown(usize),
+        /// Move the given task up
+        MoveUp(usize),
+        /// Update the new task input editor
+        NewInput(String),
+        /// Remove an existing task
+        Remove(usize)
+        /// Save to disk
+        Save
+    }
+
+    pub struct Page {
+        new_task_input: String,
+        tasks: Vec&lt;String&gt;,
+    }
+
+    impl Page {
+        pub fn view(&amp;self) -&gt; cosmic::Element&lt;Message&gt; {
+            // Where new tasks will be input before being added to the task list.
+            let new_task_input = widget::text_input("Write down a new task here", &amp;self.new_task_input)
+                .on_input(Message::NewInput)
+                .on_submit(Message::Add);
+
+            // Fold each enumerated task into a widget that is pushed to a scrollable column.
+            let saved_tasks = self.tasks.iter()
+                .enumerate()
+                .fold(widget::column(), |column, (id, task)| {
+                    column.push(
+                        // A hypothetical widget created for this app
+                        crate::widget::task(task.as_str())
+                            .on_remove(Message::Remove(id))
+                            .on_input(|text| Message::EditInput(id, text))
+                            .on_move_down(Message::MoveDown(id))
+                            .on_move_up(Message::MoveUp(id))
+                            .into()
+                    )
+                })
+                .apply(widget::scrollable);
+
+            // Compose the above widgets into the column view.
+            widget::column::with_capacity(2)
+                .spacing(cosmic::theme::active().cosmic().spacing.space_l)
+                .push(new_task_input)
+                .push(saved_tasks)
+                .into()
+        }
+
+        pub fn update(&amp;mut self, message: Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Message&gt;&gt; {
+            match message {
+                Message::Add =&gt; {
+                    self.tasks.insert(std::mem::take(&amp;mut self.new_task_input));
+                }
+
+                Message::EditInput(id, task) =&gt; {
+                    self.tasks[id] = task;
+                }
+
+                Message::MoveDown(id) =&gt; {
+                    if id + 1 &lt; self.tasks.len() {
+                        self.tasks.swap(id, id + 1);
+                    }
+                }
+
+                Message::MoveUp(id) =&gt; {
+                    if id &gt; 0 {
+                        self.tasks.swap(id, id - 1);
+                    }
+                }
+
+                Message::NewInput(input) =&gt; {
+                    self.new_task_input = input;
+                }
+
+                Message::Remove(id) =&gt; {
+                    self.tasks.remove(id);
+                }
+
+                Message::Save =&gt; {
+                    // Hypothetical method to save the tasks to disk.
+                    let save_future = self.save_to_disk();
+                    return cosmic::task::future(save_future);
+                }
+            }
+
+            cosmic::Task::none()
+        }
+    }
+}
+</code></pre>
+<p>And now the <code>config</code> module:</p>
+<pre><code class="language-rs">
+mod config {
+    #[derive(Debug, Clone)]
+    pub enum Message {
+        OpenUrl(url::Url)
+    }
+
+    pub struct Page {
+        author_name: String,
+        donate_url: url::Url,
+        homepage_url: url::Url,
+        repository_urlL: url::Url,
+    }
+
+    impl Page {
+        pub fn view(&amp;self) -&gt; cosmic::Element&lt;Message&gt; {
+            // Hypothetical config page
+        }
+
+        pub fn update(&amp;mut self, message: Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Message&gt;&gt; {
+            match message {
+                OpenUrl(url) =&gt; {
+                    tokio::spawn(open_url(url));
+                }
+            }
+
+            cosmic::Task::none()
+        }
+    }
+
+    pub async fn open_url(url: url::Url) {
+        // ...
+    }
+}
+
+</code></pre>
+<p>We can then use them in your application's own native view and update functions like so:</p>
+<pre><code class="language-rs">use std::
+#[derive(Debug, Clone)]
+enum Message {
+    SetPage(PageId),
+    ConfigPage(config::Message),
+    TodoPage(todo::Message),
+}
+
+impl From&lt;config::Message&gt; for Message {
+    fn from(message: config::Message) -&gt; Self {
+        Self::ConfigPage(config::Message)
+    }
+}
+
+impl From&lt;todo::Message&gt; for Message {
+    fn from(message: todo::Message) -&gt; Self {
+        Self::TodoPage(todo::Message)
+    }
+}
+
+#[derive(Debug, Clone)]
+enum PageId {
+    Config
+    Todo,
+}
+
+// ...
+
+fn view(&amp;self) -&gt; cosmic::Element&lt;Message&gt; {
+    match self.active_page {
+        PageId::Todo =&gt; self.todo_page.view().map(Message::TodoPage),
+        PageId::Config =&gt; self.config_page.view().map(Message::ConfigPage),
+    }
+}
+
+fn update(&amp;mut self, message: Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Message&gt;&gt; {
+    match message {
+        Message::SetPage(id) =&gt; {
+            self.active_page = id;
+
+            match self.active_page {
+                PageId::Config =&gt; (),
+                PageId::Todo =&gt; return cosmic::task::future(async move {
+                    Message::TodoPage(todo::load().await)
+                }),
+            }
+        }
+
+        Message::ConfigPage(message) =&gt; {
+            self.config_page.update(message).map(Into::into)
+        }
+
+        Message::TodoPage(message) =&gt; {
+            self.todo_page.update(message).map(Into::into)
+        }
+    }
+}
+
+</code></pre>
+<p>We may even implement the <code>Application::on_close_requested()</code> method in our app to handle that <code>Save</code> message for our <code>todo</code> page.</p>
+<pre><code class="language-rs">fn on_close_requested(&amp;mut self) -&gt; Option&lt;Message&gt; {
+    Some(Message::TodoPage(todo::Message::Save))
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="states"><a class="header" href="#states">States</a></h2>
+<p>One of the most useful aspects of Rust for application development is the ability to use sum types with pattern matching to implement state machines.
+Messages received by the application can apply transitions to states within the application seamlessly.
+Which can make logic errors less likely to occur when you remove the need to guess the state based on values alone.</p>
+<pre><code class="language-rs">enum Package {
+    Downloading { package: String, progress: usize, total: usize, time: std::time::Duration },
+    Installed { package: String },
+    Installable { package: String },
+}
+
+struct Installer {
+    package: Option&lt;Package&gt;,
+}
+</code></pre>
+<p>At any given moment, the state of the <code>package</code> in the <code>Installer</code> has four possible variants: none, downloading, installed, or installable. This makes the task of determining what to display in the view simple. Only values necessary for that state will be stored in the model.</p>
+<pre><code class="language-rs">pub fn view(&amp;self) -&gt; cosmic::Element&lt;Message&gt; {
+    match self.package {
+        Some(Package::Downloading { package, progress, total, time }) =&gt; {
+            widget::text(format!("{package}} installing ({progress}/{total} {}s)", time.as_secs()))
+                .into()
+        }
+
+        Some(Package::Installed { package }) =&gt; {
+            widget::text(format!("{package} has already been installed"))
+                .into()
+        }
+
+        Some(Package::Installable { package }) =&gt; {
+            widget::button::text(format!("Install {package}"))
+                .on_press(Message::Install)
+                .into()
+        }
+
+        None =&gt; {
+            widget::text("Select a package to install").into()
+        }
+    }
+}
+</code></pre>
+<p>You could similarly use this in an application to enable it to store data only for the currently-active page in the application.</p>
+<pre><code class="language-rs">struct App {
+    page: Page,
+}
+
+enum Page {
+    AboutPage(about::Page),
+    ConfigPage(config::Page),
+    TodoPage(todo::Page),
+}
+
+#[derive(Debug, Clone)]
+enum PageId {
+    Config
+    Todo,
+}
+
+#[derive(Debug, Clone)]
+enum Message {
+    SetPage(PageId),
+    ConfigPage(config::Message),
+    TodoPage(todo::Message),
+}
+
+// ...
+
+fn view(&amp;self) -&gt; cosmic::Element&lt;Message&gt; {
+    match self.page {
+        Page::Todo(page) =&gt; page.view(),
+        Page::Config(page) =&gt; page.view(),
+    }
+}
+
+fn update(&amp;mut self, message: Message) -&gt; cosmic::Task&lt;cosmic::Action&lt;Message&gt;&gt; {
+    match message {
+        // Change the active page.
+        Message::SetPage(id) =&gt; {
+            match id {
+                PageId::Config =&gt; {
+                    self.page = Page::Config(config::Page::new());
+                }
+
+                PageId::Todo(page) =&gt; {
+                    self.page = Page::Todo(todo::Page::new());
+                    return cosmic::task::future(async {
+                        Message::TodoPage(todo::load().await)
+                    });
+                }
+            };
+        }
+
+        // Apply the message only if the config page is active.
+        Message::ConfigPage(message) =&gt; {
+            if let Page::Config(ref mut page) = self.page {
+                return page.update(message);
+            }
+        }
+
+        // Apply the message only if the todo page is active.
+        Message::TodoPage(message) =&gt; {
+            if let Page::Todo(ref mut page) = self.page {
+                return page.update(message);
+            }
+        }
+    }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="reducing-monomorphization"><a class="header" href="#reducing-monomorphization">Reducing Monomorphization</a></h2>
+<p>Rust uses monorphization to create multiple separate instances of types and functions that use generics—one for each type used.
+Although it improves performance over dynamic dispatch, it will increase compile times and binary size significantly if used excessively.
+If this is a concern, it will be important to keep elements across your application of the same message type.
+One way that you can reduce this is to pass a closure into your view and update functions to allow the caller to perform the conversion in advance.</p>
+<pre><code class="language-rs">pub fn view&lt;Out&gt;(&amp;self, on_message: impl Fn(Message) -&gt; Out) -&gt; cosmic::Element&lt;Out&gt; {
+    // Where new tasks will be input before being added to the task list.
+    let new_task_input = widget::text_input("Write down a new task here", &amp;self.new_task_input)
+        .on_input(on_message(Message::NewInput))
+        .on_submit(on_message(Message::Add));
+
+    // Fold each enumerated task into a widget that is pushed to a scrollable column.
+    let saved_tasks = self.tasks.iter()
+        .enumerate()
+        .fold(widget::column(), |column, (id, task)| {
+            column.push(
+                // A hypothetical widget created for this app
+                crate::widget::task(task.as_str())
+                    .on_remove(on_message(Message::Remove(id)))
+                    .on_input(|text| on_message(Message::EditInput(id, text)))
+                    .on_move_down(on_message(Message::MoveDown(id)))
+                    .on_move_up(on_message(Message::MoveUp(id)))
+                    .into()
+            )
+        })
+        .apply(widget::scrollable);
+
+    // Compose the above widgets into the column view.
+    widget::column::with_capacity(2)
+        .spacing(cosmic::theme::active().cosmic().spacing.space_l)
+        .push(new_task_input)
+        .push(saved_tasks)
+        .into()
+}
+</code></pre>
+<p>However, since this function takes an <code>impl</code> type as an input paramter, it too will be monomorphized across different closure types used as the input.
+In some cases you might want to use a <a href="https://www.possiblerust.com/pattern/non-generic-inner-functions">non-generic inner function</a> where the inner function can be declared <code>#[inline(never)]</code>.
+In others, it may be easier to use dynamic dispatch with trait objects via the dyn keyword.</p>
+<pre><code class="language-rs">pub fn view&lt;Out&gt;(&amp;self, on_message: &amp;dyn Fn(Message) -&gt; Out) -&gt; cosmic::Element&lt;Out&gt;
+</code></pre>
+<p>Or</p>
+<pre><code class="language-rs">pub fn view&lt;Out&gt;(&amp;self, on_message: Box&lt;dyn Fn(Message) -&gt; Out&gt;) -&gt; cosmic::Element&lt;Out&gt;
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cosmic-concepts"><a class="header" href="#cosmic-concepts">COSMIC Concepts</a></h1>
+<p>This section covers all aspects of libcosmic which are unique to the COSMIC toolkit.</p>
+<p>All apps developed for COSMIC adhere to COSMIC's design language and interface guidelines.
+This includes common interface elements such as the header bar, navigation bar, and context drawer.
+Most of which are automatically derived for apps using the toolkit by default.</p>
+<p>While it may be possible to ignore—and even override—them, apps developed for COSMIC should strive to utilize them in their designs.
+Consistent application of interface concepts improves accessibility of applications in the COSMIC ecosystem.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="nav-bar"><a class="header" href="#nav-bar">Nav Bar</a></h1>
+<p>COSMIC's Nav Bar is a common element found in most applications with navigatable interfaces. The <code>cosmic::Application</code> trait comes with some predefined methods that can be optionally set to enable integration with the Nav Bar with minimal setup.</p>
+<p>First, it is necessary to add the <a href="https://pop-os.github.io/libcosmic/cosmic/widget/nav_bar/type.Model.html">nav_bar::Model</a> to your application's model.</p>
+<pre><code class="language-rs">struct AppModel {
+    /// A model that contains all of the pages assigned to the nav bar panel.
+    nav: nav_bar::Model,
+}
+</code></pre>
+<p>The nav bar can then be enabled by implementing these methods in your <code>cosmic::Application</code> trait.</p>
+<pre><code class="language-rs">/// Enable the nav bar to appear in your application when `Some`.
+fn nav_model(&amp;self) -&gt; Option&lt;&amp;nav_bar::Model&gt; {
+    Some(&amp;self.nav)
+}
+
+/// Activate the nav item when selected.
+fn on_nav_select(&amp;mut self, id: nav_bar::Id) -&gt; Command&lt;Self::Message&gt; {
+    // Activate the page in the model.
+    self.nav.activate(id);
+}
+</code></pre>
+<p>Items can be added and modified from the init or update methods.</p>
+<pre><code class="language-rs">fn init(core: Core, _flags: Self::Flags) -&gt; (Self, Command&lt;Self::Message&gt;) {
+    let mut nav = nav_bar::Model::default();
+
+    nav.insert()
+        .text("Page 1")
+        .data::&lt;Page&gt;(Page::Page1)
+        .icon(icon::from_name("applications-science-symbolic"))
+        .activate();
+
+    nav.insert()
+        .text("Page 2")
+        .data::&lt;Page&gt;(Page::Page2)
+        .icon(icon::from_name("applications-system-symbolic"));
+
+    nav.insert()
+        .text("Page 3")
+        .data::&lt;Page&gt;(Page::Page3)
+        .icon(icon::from_name("applications-games-symbolic"));
+
+    let mut app = YourApp {
+        core,
+        nav,
+    };
+
+    (app, Command::none())
+}
+</code></pre>
+<p>Each item in the model can hold any number of custom data types, which can be fetched by their type.</p>
+<pre><code class="language-rs">if let Some(page) = self.nav.data::&lt;Page&gt;().copied() {
+    eprintln!("the current page is {page}");
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="menubar"><a class="header" href="#menubar">MenuBar</a></h1>
+<p>It is also recommended for applications to provide menu bars whenever they have sufficient need to display a variety of selectable options. See the <a href="https://pop-os.github.io/libcosmic/cosmic/widget/menu/index.html">cosmic::widget::menus</a> module for more details on the APIs available for menu creation.</p>
+<blockquote>
+<p>In the future, menu bars will be a source for interacting with global menus.</p>
+</blockquote>
+<h2 id="defining-menuactions"><a class="header" href="#defining-menuactions">Defining MenuAction(s)</a></h2>
+<p>Menu bars have their own custom message types. This one will provide just an about settings page.</p>
+<pre><code class="language-rs">#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MenuAction {
+    About,
+}
+</code></pre>
+<p>For this type to be usable with a menu bar, it needs to implement the <a href="https://pop-os.github.io/libcosmic/cosmic/widget/menu/action/trait.MenuAction.html">menu::Action</a> trait. This defines which application message that the menu action should convert into.</p>
+<pre><code class="language-rs">impl menu::Action for MenuAction {
+    type Message = Message;
+
+    fn message(&amp;self) -&gt; Self::Message {
+        match self {
+            MenuAction::About =&gt; Message::ToggleContextPage(ContextPage::About),
+        }
+    }
+}
+</code></pre>
+<h2 id="keybindings"><a class="header" href="#keybindings">Keybindings</a></h2>
+<p>Your preferred key bindings for these menu actions should also be attached to your application's model.</p>
+<pre><code class="language-rs">struct AppModel {
+    /// Key bindings for the application's menu bar.
+    key_binds: HashMap&lt;menu::KeyBind, MenuAction&gt;,
+}
+</code></pre>
+<h2 id="add-to-cosmicapplication"><a class="header" href="#add-to-cosmicapplication">Add to <code>cosmic::Application</code></a></h2>
+<p>You can add then add a menu bar to the start of your application's header bar by defining this method in your <code>cosmic::Application</code> implementation.</p>
+<pre><code class="language-rs">/// Elements to pack at the start of the header bar.
+fn header_start(&amp;self) -&gt; Vec&lt;Element&lt;Self::Message&gt;&gt; {
+    let menu_bar = menu::bar(vec![menu::Tree::with_children(
+        menu::root(fl!("view")),
+        menu::items(
+            &amp;self.key_binds,
+            vec![menu::Item::Button(fl!("about"), MenuAction::About)],
+        ),
+    )]);
+
+    vec![menu_bar.into()]
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="context-drawer"><a class="header" href="#context-drawer">Context Drawer</a></h1>
+<p>COSMIC applications use the Context Drawer to display additional application context for a select context. This overlay widget will be placed above the contents of the window on the right side of the application window.</p>
+<h2 id="context-page"><a class="header" href="#context-page">Context Page</a></h2>
+<p>As the context drawer is a reusable element, you want to define a type for describing which context to show. To start with, we will make a context page which shows an about page. This will require that your application has the menu bar added to it from the previous chapter.</p>
+<pre><code class="language-rs">/// Identifies a context page to display in the context drawer.
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
+pub enum ContextPage {
+    #[default]
+    About,
+}
+
+impl ContextPage {
+    fn title(&amp;self) -&gt; String {
+        match self {
+            Self::About =&gt; fl!("about"),
+        }
+    }
+}
+</code></pre>
+<p>You will also want to assign this to your application model</p>
+<pre><code class="language-rs">struct AppModel {
+    /// Display a context drawer with the designated page if defined.
+    context_page: ContextPage,
+}
+</code></pre>
+<h2 id="cosmicapplication-integration"><a class="header" href="#cosmicapplication-integration">cosmic::Application integration</a></h2>
+<p>The <code>context_drawer</code> method can be defined to show the context drawer. When this method returns an Element, the context drawer will be displayed. The COSMIC runtime keeps track of when the context drawer should be shown, so we can use this as a hint to when we can show it or not. How you define the view of this page is up to you.</p>
+<pre><code class="language-rs">/// Display a context drawer if the context page is requested.
+fn context_drawer(&amp;self) -&gt; Option&lt;Element&lt;Self::Message&gt;&gt; {
+    if !self.core.window.show_context {
+        return None;
+    }
+
+    Some(match self.context_page {
+        ContextPage::About =&gt; self.about(),
+    })
+}
+</code></pre>
+<h2 id="toggling-the-context-drawer"><a class="header" href="#toggling-the-context-drawer">Toggling the context drawer</a></h2>
+<p>In the previous chapter, we defined a message for toggling the context drawer and assigning the page. This glue will toggle the visibility of the context drawer, assign the context page, and set the title of the context drawer. Note that the <code>set_context_title</code> is a method from <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.ApplicationExt.html#method.set_context_title">cosmic::ApplicationExt</a>. This method sets the title of the context page in the <code>cosmic::app::Core</code>.</p>
+<pre><code class="language-rs">match message {
+    Message::ToggleContextPage(context_page) =&gt; {
+        if self.context_page == context_page {
+            // Close the context drawer if the toggled context page is the same.
+            self.core.window.show_context = !self.core.window.show_context;
+        } else {
+            // Open the context drawer to display the requested context page.
+            self.context_page = context_page;
+            self.core.window.show_context = true;
+        }
+
+        // Set the title of the context drawer.
+        self.set_context_title(context_page.title());
+    }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="panel-applets"><a class="header" href="#panel-applets">Panel Applets</a></h1>
+<p>COSMIC panel applets are built using the same libcosmic toolkit that desktop applications are built with.
+They operate as their own self-contained application processes with transparent headerless windows.
+No need to use a custom JavaScript API; or use a different shell toolkit; in a restrictive runtime environment.</p>
+<p>The panel—which is actually a wayland compositor itself—reads its config file on startup to determine which applications to launch by their desktop entry names.
+Their position in the config determines where the panel will position their main window within itself.
+The popup windows that these applets create are forwarded to the host compositor to be displayed outside of the panel.</p>
+<p>This architecture has many security benefits, in addition to easing the burden of development.
+Once you know how to build a COSMIC application, you can already create applets with only a few adjustments to the application.
+First of which is to run the application with <a href="https://github.com/pop-os/libcosmic/blob/c7edd37b03cac28650cb96023a9cb965d3e062ac/src/applet/mod.rs#L379-L428">cosmic::applet::run</a> instead of <code>cosmic::app::run</code>.</p>
+<blockquote>
+<p>Must enable the <code>applet</code> feature in libcosmic. May also want to remove <code>wgpu</code> to use a software renderer for lower memory usage.</p>
+</blockquote>
+<pre><code class="language-rs">cosmic::applet::run::&lt;Power&gt;(())
+</code></pre>
+<p>Next, you will define the view for main window, which will be used inside of the panel.
+There is a template provided by the <code>cosmic::Core</code> in case you wish to create a standard icon button.
+You only need to provide a message for toggling the popup created by the panel.</p>
+<pre><code class="language-rs">fn view(&amp;self) -&gt; cosmic::Element&lt;Message&gt; {
+    self.core
+        .applet
+        .icon_button(&amp;self.icon_name)
+        .on_press_down(Message::TogglePopup)
+        .into()
+}
+</code></pre>
+<p>In your <code>update()</code> method, you can create a popup window like so, which will destroy the popup if a popup is already active.</p>
+<pre><code class="language-rs">match message {
+    Message::TogglePopup =&gt; {
+        if let Some(p) = self.popup.take() {
+            cosmic::iced::platform_specific::shell::commands::popup::destroy_popup(p)
+        } else {
+            let new_id = window::Id::unique();
+            self.popup.replace(new_id);
+
+            let mut popup_settings = self.core.applet.get_popup_settings(
+                self.core.main_window_id().unwrap(),
+                new_id,
+                Some((500, 500)),
+                None,
+                None,
+            );
+
+            popup_settings.positioner.size_limits = Limits::NONE
+                .min_width(100.0)
+                .min_height(100.0)
+                .max_height(400.0)
+                .max_width(500.0);
+
+            cosmic::iced::platform_specific::shell::commands::popup::get_popup(popup_settings)
+        }
+    }
+}
+</code></pre>
+<p>Now you can define the view of your popup window using <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#method.view_window">Application::view_window</a>, which takes a window ID as an input in the event that you have multiple windows to display views for.
+This particular example is from the power applet:</p>
+<pre><code class="language-rs">fn view_window(&amp;self, id: window::Id) -&gt; cosmic::Element&lt;Message&gt; {
+    let Spacing {
+        space_xxs,
+        space_s,
+        space_m,
+        ..
+    } = theme::active().cosmic().spacing;
+
+    if matches!(self.popup, Some(p) if p == id) {
+        let settings = menu_button(text::body(fl!("settings")))
+            .on_press(Message::Settings);
+
+        let session = column![
+            menu_button(
+                row![
+                    text_icon("system-lock-screen-symbolic", 24),
+                    text::body(fl!("lock-screen")),
+                    Space::with_width(Length::Fill),
+                    text::body(fl!("lock-screen-shortcut")),
+                ]
+                .align_y(Alignment::Center)
+                .spacing(space_xxs)
+            )
+            .on_press(Message::Action(PowerAction::Lock)),
+            menu_button(
+                row![
+                    text_icon("system-log-out-symbolic", 24),
+                    text::body(fl!("log-out")),
+                    Space::with_width(Length::Fill),
+                    text::body(fl!("log-out-shortcut")),
+                ]
+                .align_y(Alignment::Center)
+                .spacing(space_xxs)
+            )
+            .on_press(Message::Action(PowerAction::LogOut)),
+        ];
+
+        let power = row![
+            power_buttons("system-suspend-symbolic", fl!("suspend"))
+                .on_press(Message::Action(PowerAction::Suspend)),
+            power_buttons("system-reboot-symbolic", fl!("restart"))
+                .on_press(Message::Action(PowerAction::Restart)),
+            power_buttons("system-shutdown-symbolic", fl!("shutdown"))
+                .on_press(Message::Action(PowerAction::Shutdown)),
+        ]
+        .spacing(space_m)
+        .padding([0, space_m]);
+
+        let content = column![
+            settings,
+            padded_control(divider::horizontal::default()).padding([space_xxs, space_s]),
+            session,
+            padded_control(divider::horizontal::default()).padding([space_xxs, space_s]),
+            power
+        ]
+        .align_x(Alignment::Start)
+        .padding([8, 0]);
+
+        self.core
+            .applet
+            .popup_container(content)
+            .max_height(400.)
+            .max_width(500.)
+            .into()
+    } else {
+        widget::text("").into()
+    }
+}
+</code></pre>
+<p>You'll also want to use the applet style to get the transparent window background using <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#method.style">Application::style</a>.</p>
+<pre><code class="language-rs">fn style(&amp;self) -&gt; Option&lt;cosmic::iced_runtime::Appearance&gt; {
+    Some(cosmic::applet::style())
+}
+</code></pre>
+<p>Now all that's left is informing cosmic-settings about the existence of the applet by adding some keys to its desktop entry.
+See the power applet's desktop entry as an example, which defines <code>NoDisplay=true</code>, <code>X-CosmicApplet=true</code>, <code>X-CosmicHoverPopup=Auto</code>, <code>X-CosmicHoverPopup=Auto</code>, and <code>X-OverflowPriority=10</code>.</p>
+<pre><code class="language-ini">[Desktop Entry]
+Name=User Session
+Name[hu]=Felhasználói Munkamenet
+Name[pl]=Sesja użytkownika
+Type=Application
+Exec=cosmic-applet-power
+Terminal=false
+Categories=COSMIC;
+Keywords=COSMIC;Iced;
+# Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+Icon=com.system76.CosmicAppletPower-symbolic
+StartupNotify=true
+NoDisplay=true
+X-CosmicApplet=true
+X-CosmicHoverPopup=Auto
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dialogs"><a class="header" href="#dialogs">Dialogs</a></h1>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>

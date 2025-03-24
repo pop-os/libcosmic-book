@@ -1,0 +1,354 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Panel Applets - COSMIC Toolkit</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">COSMIC Toolkit</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="panel-applets"><a class="header" href="#panel-applets">Panel Applets</a></h1>
+<p>COSMIC panel applets are built using the same libcosmic toolkit that desktop applications are built with.
+They operate as their own self-contained application processes with transparent headerless windows.
+No need to use a custom JavaScript API; or use a different shell toolkit; in a restrictive runtime environment.</p>
+<p>The panel—which is actually a wayland compositor itself—reads its config file on startup to determine which applications to launch by their desktop entry names.
+Their position in the config determines where the panel will position their main window within itself.
+The popup windows that these applets create are forwarded to the host compositor to be displayed outside of the panel.</p>
+<p>This architecture has many security benefits, in addition to easing the burden of development.
+Once you know how to build a COSMIC application, you can already create applets with only a few adjustments to the application.
+First of which is to run the application with <a href="https://github.com/pop-os/libcosmic/blob/c7edd37b03cac28650cb96023a9cb965d3e062ac/src/applet/mod.rs#L379-L428">cosmic::applet::run</a> instead of <code>cosmic::app::run</code>.</p>
+<blockquote>
+<p>Must enable the <code>applet</code> feature in libcosmic. May also want to remove <code>wgpu</code> to use a software renderer for lower memory usage.</p>
+</blockquote>
+<pre><code class="language-rs">cosmic::applet::run::&lt;Power&gt;(())
+</code></pre>
+<p>Next, you will define the view for main window, which will be used inside of the panel.
+There is a template provided by the <code>cosmic::Core</code> in case you wish to create a standard icon button.
+You only need to provide a message for toggling the popup created by the panel.</p>
+<pre><code class="language-rs">fn view(&amp;self) -&gt; cosmic::Element&lt;Message&gt; {
+    self.core
+        .applet
+        .icon_button(&amp;self.icon_name)
+        .on_press_down(Message::TogglePopup)
+        .into()
+}
+</code></pre>
+<p>In your <code>update()</code> method, you can create a popup window like so, which will destroy the popup if a popup is already active.</p>
+<pre><code class="language-rs">match message {
+    Message::TogglePopup =&gt; {
+        if let Some(p) = self.popup.take() {
+            cosmic::iced::platform_specific::shell::commands::popup::destroy_popup(p)
+        } else {
+            let new_id = window::Id::unique();
+            self.popup.replace(new_id);
+
+            let mut popup_settings = self.core.applet.get_popup_settings(
+                self.core.main_window_id().unwrap(),
+                new_id,
+                Some((500, 500)),
+                None,
+                None,
+            );
+
+            popup_settings.positioner.size_limits = Limits::NONE
+                .min_width(100.0)
+                .min_height(100.0)
+                .max_height(400.0)
+                .max_width(500.0);
+
+            cosmic::iced::platform_specific::shell::commands::popup::get_popup(popup_settings)
+        }
+    }
+}
+</code></pre>
+<p>Now you can define the view of your popup window using <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#method.view_window">Application::view_window</a>, which takes a window ID as an input in the event that you have multiple windows to display views for.
+This particular example is from the power applet:</p>
+<pre><code class="language-rs">fn view_window(&amp;self, id: window::Id) -&gt; cosmic::Element&lt;Message&gt; {
+    let Spacing {
+        space_xxs,
+        space_s,
+        space_m,
+        ..
+    } = theme::active().cosmic().spacing;
+
+    if matches!(self.popup, Some(p) if p == id) {
+        let settings = menu_button(text::body(fl!("settings")))
+            .on_press(Message::Settings);
+
+        let session = column![
+            menu_button(
+                row![
+                    text_icon("system-lock-screen-symbolic", 24),
+                    text::body(fl!("lock-screen")),
+                    Space::with_width(Length::Fill),
+                    text::body(fl!("lock-screen-shortcut")),
+                ]
+                .align_y(Alignment::Center)
+                .spacing(space_xxs)
+            )
+            .on_press(Message::Action(PowerAction::Lock)),
+            menu_button(
+                row![
+                    text_icon("system-log-out-symbolic", 24),
+                    text::body(fl!("log-out")),
+                    Space::with_width(Length::Fill),
+                    text::body(fl!("log-out-shortcut")),
+                ]
+                .align_y(Alignment::Center)
+                .spacing(space_xxs)
+            )
+            .on_press(Message::Action(PowerAction::LogOut)),
+        ];
+
+        let power = row![
+            power_buttons("system-suspend-symbolic", fl!("suspend"))
+                .on_press(Message::Action(PowerAction::Suspend)),
+            power_buttons("system-reboot-symbolic", fl!("restart"))
+                .on_press(Message::Action(PowerAction::Restart)),
+            power_buttons("system-shutdown-symbolic", fl!("shutdown"))
+                .on_press(Message::Action(PowerAction::Shutdown)),
+        ]
+        .spacing(space_m)
+        .padding([0, space_m]);
+
+        let content = column![
+            settings,
+            padded_control(divider::horizontal::default()).padding([space_xxs, space_s]),
+            session,
+            padded_control(divider::horizontal::default()).padding([space_xxs, space_s]),
+            power
+        ]
+        .align_x(Alignment::Start)
+        .padding([8, 0]);
+
+        self.core
+            .applet
+            .popup_container(content)
+            .max_height(400.)
+            .max_width(500.)
+            .into()
+    } else {
+        widget::text("").into()
+    }
+}
+</code></pre>
+<p>You'll also want to use the applet style to get the transparent window background using <a href="https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html#method.style">Application::style</a>.</p>
+<pre><code class="language-rs">fn style(&amp;self) -&gt; Option&lt;cosmic::iced_runtime::Appearance&gt; {
+    Some(cosmic::applet::style())
+}
+</code></pre>
+<p>Now all that's left is informing cosmic-settings about the existence of the applet by adding some keys to its desktop entry.
+See the power applet's desktop entry as an example, which defines <code>NoDisplay=true</code>, <code>X-CosmicApplet=true</code>, <code>X-CosmicHoverPopup=Auto</code>, <code>X-CosmicHoverPopup=Auto</code>, and <code>X-OverflowPriority=10</code>.</p>
+<pre><code class="language-ini">[Desktop Entry]
+Name=User Session
+Name[hu]=Felhasználói Munkamenet
+Name[pl]=Sesja użytkownika
+Type=Application
+Exec=cosmic-applet-power
+Terminal=false
+Categories=COSMIC;
+Keywords=COSMIC;Iced;
+# Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+Icon=com.system76.CosmicAppletPower-symbolic
+StartupNotify=true
+NoDisplay=true
+X-CosmicApplet=true
+X-CosmicHoverPopup=Auto
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="context-drawer.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="dialogs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="context-drawer.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="dialogs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
