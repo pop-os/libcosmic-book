@@ -18,7 +18,7 @@ First of which is to run the application with [cosmic::applet::run][applet-run] 
 cosmic::applet::run::<Power>(())
 ```
 
-Next, you will define the view for main window, which will be used inside of the panel.
+Next, you will define the view for the main window, which will be used inside of the panel.
 There is a template provided by the `cosmic::Core` in case you wish to create a standard icon button.
 You only need to provide a message for toggling the popup created by the panel.
 

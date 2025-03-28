@@ -25,7 +25,7 @@ struct App {
 }
 ```
 
-The cosmic library also has some state of its own that you will need to store in your application model, refferred to as the [cosmic::Core][app-core]. This is managed internally by the cosmic runtime, but can also be used by the application to get and set certain runtime parameters.
+The cosmic library also has some state of its own that you will need to store in your application model, referred to as the [cosmic::Core][app-core]. This is managed internally by the cosmic runtime, but can also be used by the application to get and set certain runtime parameters.
 
 ## Message
 
