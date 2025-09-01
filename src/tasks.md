@@ -14,7 +14,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
 ## Avoid blocking the async executor
 
-However, for the same reason that the GUI blocks when an update function is executing, similar is true for the thread where the async executor is scheduling the execution of its futures. The default executor for COSMIC applications is a [tokio][tokio] runtime configured to use a single background thread for scheduling async tasks. So if the application needs to spawn many futures on the runtime to execute concurrently, any operation that would block the executor should be moved onto another thread with [tokio::task::spawn_blocking][spawn-blocking].
+However, for the same reason that the GUI blocks when an update function is executing, the same is true for the thread where the async executor is scheduling the execution of its futures. The default executor for COSMIC applications is a [tokio][tokio] runtime configured to use a single background thread for scheduling async tasks. So if the application needs to spawn many futures on the runtime to execute concurrently, any operation that would block the executor should be moved onto another thread with [tokio::task::spawn_blocking][spawn-blocking].
 
 ```rs
 fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
@@ -86,7 +86,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
 
 ## Streaming
 
-Alternatively, they can produced from types which implement [Stream][rust-stream]. Such as from the receiving end of a channel which it is being pushed to from anothre thread.
+Alternatively, they can produced from types which implement [Stream][rust-stream]. Such as from the receiving end of a channel which it is being pushed to from another thread.
 
 ```rs
 fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self::Message>> {
