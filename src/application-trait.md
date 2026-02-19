@@ -154,7 +154,7 @@ fn main() -> cosmic::iced::Result {
 }
 ```
 
-[app-core]: https://pop-os.github.io/libcosmic/cosmic/app/struct.Core.html
+[app-core]: https://pop-os.github.io/libcosmic/cosmic/struct.Core.html
 [app-trait]: https://pop-os.github.io/libcosmic/cosmic/app/trait.Application.html
 [builder-pattern]: https://rust-unofficial.github.io/patterns/patterns/creational/builder.html
 [cosmic-widget]: https://pop-os.github.io/libcosmic/cosmic/widget/index.html
