@@ -1,7 +1,7 @@
 
 ## Reducing Monomorphization
 
-Rust uses monorphization to create multiple separate instances of types and functions that use generics—one for each type used.
+Rust uses monomorphization to create multiple separate instances of types and functions that use generics—one for each type used.
 Although it improves performance over dynamic dispatch, it will increase compile times and binary size significantly if used excessively.
 If this is a concern, it will be important to keep elements across your application of the same message type.
 One way that you can reduce this is to pass a closure into your view and update functions to allow the caller to perform the conversion in advance.
