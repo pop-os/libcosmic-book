@@ -59,11 +59,11 @@ impl cosmic::Application for App {
 
     const APP_ID: &str = "tld.domain.AppName";
 
-    fn core(&self) -> &Core {
+    fn core(&self) -> &cosmic::Core {
         &self.core
     }
 
-    fn core_mut(&mut self) -> &mut Core {
+    fn core_mut(&mut self) -> &mut cosmic::Core {
         &mut self.core
     }
 }
@@ -75,18 +75,27 @@ This is where your application model will be constructed, and any necessary task
 This will typically be where you want to set the name of the window title.
 
 ```rs
-fn init(core: Core, _flags: Self::Flags) -> (Self, cosmic::app::Task<Self::Message>) {
-    let mut app = App {
-        core,
-        counter: 0,
-        counter_text: String::new(),
-    };
+impl cosmic::Application for App {
+    // ...
 
-    app.counter_text = format!("Clicked {} times", app.counter);
+    fn init(core: cosmic::Core, _flags: Self::Flags) -> (Self, cosmic::app::Task<Self::Message>) {
+        let mut app = App {
+            core,
+            counter: 0,
+            counter_text: String::new(),
+        };
 
-    let command = app.set_window_title("AppName");
+        app.counter_text = format!("Clicked {} times", app.counter);
 
-    (app, command)
+        let command: cosmic::app::Task<Self::Message>;
+        if let Some(id) = app.core.main_window_id() {
+            command = app.set_window_title(String::from("AppName"), id);
+        } else {
+            command = cosmic::app::Task::none()
+        }
+
+        (app, command)
+    }
 }
  ```
 
@@ -97,18 +106,18 @@ The returned state machine defines the layout of the interface, how it is to be 
 
 ```rs
 impl cosmic::Application for App {
-    ...
+    // ...
 
     /// The returned Element has the same lifetime as the model being borrowed.
-    fn view(&self) -> Element<Self::Message> {
-        let button = widget::button(&self.counter_text)
+    fn view(&self) -> Element<'_, Self::Message> {
+        let button = cosmic::widget::button::text(&self.counter_text)
             .on_press(Message::Clicked);
 
-        widget::container(button)
-            .width(iced::Length::Fill)
-            .height(iced::Length::Shrink)
-            .center_x()
-            .center_y()
+        cosmic::widget::container(button)
+            .width(cosmic::iced::Length::Fill)
+            .height(cosmic::iced::Length::Shrink)
+            .center_x(cosmic::iced::Length::Fill)
+            .center_y(cosmic::iced::Length::Fill)
             .into()
     }
 }
@@ -124,7 +133,7 @@ This will use Rust's pattern matching to choose a branch to execute, make any ch
 
 ```rs
 impl cosmic::Application for App {
-    ...
+    // ...
 
     fn update(&mut self, message: Self::Message) -> cosmic::app::Task<Self::Message> {
         match message {
