@@ -21,7 +21,7 @@ fn update(&mut self, message: Self::Message) -> cosmic::Task<cosmic::Action<Self
     match message {
         Message::WorkUnitReceived(work_unit) => {
             cosmic::task::future(async move {
-                Message::WorkUnitResult(tokio::spawn_blocking(move || {
+                Message::WorkUnitResult(tokio::task::spawn_blocking(move || {
                     fold_protein("0x23", 110, 80, 19, work_unit)
                 }).await)
             })
